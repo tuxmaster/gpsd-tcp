@@ -6,7 +6,7 @@ Daemon to feed the gpsd with position values form various sources via Plug-Ins.
 - systemd >= 216
 
 For/Für Fedora >= 21<br>
-yum install  qt5-qtserialport-devel qt5-qtbase-devel systemd-devel
+yum install  qt5-qtserialport-devel qt5-qtbase-devel qt5-qttools-devel systemd-devel
 
 #Build/Erstellen
 qmake-qt5 gpsd-tcp.pro
