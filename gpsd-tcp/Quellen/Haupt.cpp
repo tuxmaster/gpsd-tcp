@@ -17,20 +17,35 @@
 
 #include <QtCore>
 
+#include <signal.h>
+
 #include "Vorgaben.h"
+#include "Steuerung.h"
+
+void Signalsteuerung(int signal)
+{
+	if(signal==SIGTERM)
+	{
+		QCoreApplication::quit();
+	}
+}
 
 int main(int argc, char *argv[])
 {
 		QCoreApplication Qt(argc, argv);
+		signal(SIGTERM,Signalsteuerung);
+
 		QTranslator QtUebersetzung;
 		QTranslator ProgrammUebersetzung;
 
 		Qt.setApplicationVersion(VERSION);
+		Qt.setApplicationName(PROGRAMM);
 		QtUebersetzung.load(QString("qt_%1").arg(QLocale::system().name()),QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 		ProgrammUebersetzung.load(QString("%1_%2").arg(PROGRAMM).arg(QLocale::system().name()),QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 
 		Qt.installTranslator(&QtUebersetzung);
 		Qt.installTranslator(&ProgrammUebersetzung);
 
+		Steuerung s;
 		return Qt.exec();
 }
