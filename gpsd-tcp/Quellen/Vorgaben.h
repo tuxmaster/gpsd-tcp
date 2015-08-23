@@ -20,6 +20,9 @@
 
 #define VERSION "0.0.1"
 #define PROGRAMM "gpsd-tcp"
+#define KONFIGDATEI "/etc/gpsd-tcp.conf"
+#define MODULE "/usr/lib64/gpsd-tcp"
+#define MODUL "EM7345"
 
 #endif // VORGABEN_H
 

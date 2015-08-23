@@ -4,6 +4,7 @@ TEMPLATE 	= lib
 CONFIG	       += plugin
 VERSION		= 0.0.1
 TARGET		= em7345
+DESTDIR	        = ../
 QT		= core serialport
 
 

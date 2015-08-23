@@ -19,22 +19,36 @@
 #define STEUERUNG_H
 
 #include <QtCore>
+#include <QtNetwork>
 #include "Meldung.h"
+
+enum Protokolltiefe
+{
+	Fehler,
+	Info,
+	Debug
+};
 
 class Steuerung : public QObject
 {
 	Q_OBJECT
 	public:
-		explicit Steuerung(QObject *eltern = Q_NULLPTR);
+		explicit		Steuerung(QObject *eltern = Q_NULLPTR);
 
 	public Q_SLOTS:
-		void beenden();
+		void			beenden();
 
 	private Q_SLOTS:
-		void loslegen();
+		void			loslegen();
 
 	private:
-		void Melden(Meldung m);
+		void			Melden(Meldung m)const;
+		QSettings		*K_Einstellungen;
+		Protokolltiefe	K_Protokoll;
+		Protokolltiefe	ProtokollTextNachZahl(const QString &text) const;
+		QString			K_Modulpfad;
+		QString			K_Modul;
+
 };
 
 #endif // STEUERUNG_H
