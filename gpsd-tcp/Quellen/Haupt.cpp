@@ -40,10 +40,13 @@ int main(int argc, char *argv[])
 
 		Qt.setApplicationVersion(VERSION);
 		Qt.setApplicationName(PROGRAMM);
+
 		QtUebersetzung.load(QString("qt_%1").arg(QLocale::system().name()),QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 		ProgrammUebersetzung.load(QString("%1_%2").arg(PROGRAMM).arg(QLocale::system().name()),QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-
-		Qt.installTranslator(&QtUebersetzung);
+		if((ProgrammUebersetzung.isEmpty()) && (!QLocale::system().name().startsWith("de")))
+			ProgrammUebersetzung.load(QString("%1_en").arg(PROGRAMM),QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+		else
+			Qt.installTranslator(&QtUebersetzung);
 		Qt.installTranslator(&ProgrammUebersetzung);
 
 		Steuerung s;
