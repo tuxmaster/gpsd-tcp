@@ -175,6 +175,6 @@ void Steuerung::NeuerKlient(QObject *dienst)
 {
 	QTcpSocket* Klient =dynamic_cast<QTcpServer*> (dienst)->nextPendingConnection();
 	if (K_Protokoll >= Protokolltiefe::Info)
-		Melden(Meldung("a32a5261338d422d8e27dc832e1c6e90",tr("Verbidung von %1").arg(Klient->peerAddress().toString()),LOG_INFO));
+		Melden(Meldung("a32a5261338d422d8e27dc832e1c6e90",tr("Verbindung von %1").arg(Klient->peerAddress().toString()),LOG_INFO));
 	K_Klienten->append(Klient);
 }
