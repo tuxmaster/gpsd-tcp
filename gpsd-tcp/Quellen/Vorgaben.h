@@ -23,6 +23,8 @@
 #define KONFIGDATEI "/etc/gpsd-tcp.conf"
 #define MODULE "/usr/lib64/gpsd-tcp"
 #define MODUL "EM7345"
+#define BENUTZER "nobody"
+#define GRUPPE "nobody"
 
 #endif // VORGABEN_H
 

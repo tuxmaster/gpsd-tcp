@@ -19,7 +19,6 @@
 #define STEUERUNG_H
 
 #include <QtCore>
-#include <QtNetwork>
 #include "Meldung.h"
 
 enum Protokolltiefe
@@ -29,25 +28,31 @@ enum Protokolltiefe
 	Debug
 };
 
+class QTcpSocket;
+class QTcpServer;
 class Steuerung : public QObject
 {
 	Q_OBJECT
 	public:
-		explicit		Steuerung(QObject *eltern = Q_NULLPTR);
+		explicit			Steuerung(QObject *eltern = Q_NULLPTR);
+							~Steuerung();
 
 	public Q_SLOTS:
-		void			beenden();
+		void				beenden();
 
 	private Q_SLOTS:
-		void			loslegen();
+		void				loslegen();
+		void				NeuerKlient(QObject *dienst);
 
 	private:
-		void			Melden(Meldung m)const;
-		QSettings		*K_Einstellungen;
-		Protokolltiefe	K_Protokoll;
-		Protokolltiefe	ProtokollTextNachZahl(const QString &text) const;
-		QString			K_Modulpfad;
-		QString			K_Modul;
+		void				Melden(Meldung m)const;
+		QSettings			*K_Einstellungen;
+		Protokolltiefe		K_Protokoll;
+		Protokolltiefe		ProtokollTextNachZahl(const QString &text) const;
+		QString				K_Modulpfad;
+		QString				K_Modul;
+		QSignalMapper		*K_Klientensammler;
+		QList<QTcpSocket*>	*K_Klienten;
 
 };
 
