@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <grp.h>
 #include <pwd.h>
+#include <unistd.h>
 
 Steuerung::Steuerung(QObject *eltern) : QObject(eltern)
 {
@@ -132,13 +133,22 @@ void Steuerung::loslegen()
 	//Modul laden
 
 	//Benutzer wechseln
-
-	/*if(setuid()!=0)
-		text=strerror_l(errno)
-	if(setgid()!=0)
-			 strerror_l(errno)'*/
-
-
+	if(setuid(NutzerID)!=0)
+	{
+		int Fehler=errno;
+		Melden(Meldung("b74f03cfa9d34ed6aa9f40325ff6f4c5",tr("Konnte nicht in den Benutzerkontext %1 wechseln.\n%2").arg(NutzerName).arg(strerror(Fehler)),LOG_CRIT));
+		QCoreApplication::quit();
+		return;
+	}
+	if(setgid(GruppeID)!=0)
+	{
+		int Fehler=errno;
+		Melden(Meldung("5acf2a01d541456499e684e160bb8ebf",tr("Konnte nicht in den Gruppenkontext %1 wechseln.\n%2").arg(GruppeName).arg(strerror(Fehler)),LOG_CRIT));
+		QCoreApplication::quit();
+		return;
+	}
+	if(K_Protokoll >=Protokolltiefe::Info)
+		Melden(Meldung("a91b6e29651945378c619e50a629f8cf",trUtf8("Bereit für die Anfragen."),LOG_INFO));
 }
 void Steuerung::beenden()
 {
