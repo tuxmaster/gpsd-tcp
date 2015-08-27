@@ -15,20 +15,23 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#ifndef DUMMY_H
+#define DUMMY_H
+
 #include <QtCore>
 
-class Plugin
+class Dummy : public QObject
 {
-		public:
-			virtual					~Plugin(){}
-			virtual const QString	Version() const =0;
-			virtual const QString	Name()const =0;
-			virtual QObject			*Erweiterung(QObject *eltern)=0;
+	Q_OBJECT
+	public:
+		explicit Dummy(QObject *eltern = 0);
+
+	Q_SIGNALS:
+		void	Daten(const QString &daten);
+
+	private Q_SLOTS:
+		void	DatenSenden();
 
 };
-Q_DECLARE_INTERFACE(Plugin, "de.terrortux.gpsd-tcp.Plugin")
 
-#endif // PLUGIN_H
-
+#endif // DUMMY_H

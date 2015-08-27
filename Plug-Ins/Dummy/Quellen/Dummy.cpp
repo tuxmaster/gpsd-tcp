@@ -15,20 +15,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
-#include <QtCore>
+#include "Dummy.h"
 
-class Plugin
+Dummy::Dummy(QObject *eltern) : QObject(eltern)
 {
-		public:
-			virtual					~Plugin(){}
-			virtual const QString	Version() const =0;
-			virtual const QString	Name()const =0;
-			virtual QObject			*Erweiterung(QObject *eltern)=0;
-
-};
-Q_DECLARE_INTERFACE(Plugin, "de.terrortux.gpsd-tcp.Plugin")
-
-#endif // PLUGIN_H
+	QTimer *Uhr= new QTimer(this);
+	connect(Uhr,SIGNAL(timeout()),this,SLOT(DatenSenden()));
+	Uhr->start(1000);
+}
+void Dummy::DatenSenden()
+{
+	Q_EMIT Daten("Muhhhhhhhhhhhhhhh");
+}
 

@@ -3,9 +3,9 @@ include(../../Vorgaben.pri)
 TEMPLATE 	= lib
 CONFIG	       += plugin
 VERSION		= 0.0.1
-TARGET		= em7345
+TARGET		= dummy
 DESTDIR	        = ../
-QT		= core serialport
+QT		= core
 
 
 UI_DIR		= tmp/ui
@@ -14,10 +14,10 @@ OBJECTS_DIR	= tmp/obj
 RCC_DIR		= tmp/rcc
 
 HEADERS += \
-    Quellen/Erweiterung_EM7345.h \
-    Quellen/EM7345.h
+    Quellen/Erweiterung_Dummy.h \
+    Quellen/Dummy.h
 
 SOURCES += \
-    Quellen/EM7345.cpp
+    Quellen/Dummy.cpp
 
 

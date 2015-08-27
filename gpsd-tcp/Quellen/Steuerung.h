@@ -50,11 +50,10 @@ class Steuerung : public QObject
 		void				Melden(Meldung m)const;
 		void				TCPstarten();
 		bool				KontextWechseln(const QString &nutzer, const QString &gruppe);
+		bool				ModulLaden(const QString modulname,const QString &pfad);
 		QSettings			*K_Einstellungen;
 		Protokolltiefe		K_Protokoll;
 		Protokolltiefe		ProtokollTextNachZahl(const QString &text) const;
-		QString				K_Modulpfad;
-		QString				K_Modul;
 		QSignalMapper		*K_Klientensammler;
 		QSignalMapper		*K_Klientloescher;
 		QList<QTcpSocket*>	*K_Klienten;

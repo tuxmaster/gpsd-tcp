@@ -15,20 +15,20 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#ifndef EM7345_H
+#define EM7345_H
+
 #include <QtCore>
 
-class Plugin
+class EM7345 : public QObject
 {
-		public:
-			virtual					~Plugin(){}
-			virtual const QString	Version() const =0;
-			virtual const QString	Name()const =0;
-			virtual QObject			*Erweiterung(QObject *eltern)=0;
+	Q_OBJECT
+	public:
+		explicit EM7345(QObject *eltern = 0);
+
+	Q_SIGNALS:
+		void	Daten(const QString &daten);
 
 };
-Q_DECLARE_INTERFACE(Plugin, "de.terrortux.gpsd-tcp.Plugin")
 
-#endif // PLUGIN_H
-
+#endif // EM7345_H

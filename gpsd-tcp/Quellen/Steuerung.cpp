@@ -42,23 +42,19 @@ Steuerung::~Steuerung()
 		for( auto Klient : *K_Klienten)
 			Klient->disconnectFromHost();
 	}
+	delete K_Klienten;
 }
 
 void Steuerung::loslegen()
 {
 	Melden(Meldung("a475b92d2cc84b63a233e7a027442c5f",tr("Starte ...")));
 	K_Protokoll=ProtokollTextNachZahl(K_Einstellungen->value("Protokollebene","Info").toString());
-	K_Modulpfad=K_Einstellungen->value("Modulpfad",MODULE).toString();
-	K_Modul=K_Einstellungen->value("Modul",MODUL).toString();
-	if (K_Protokoll==Protokolltiefe::Debug)
-	{
-		Melden(Meldung("35b01b5da0cc44dcb04822de636f620b",tr("Modulpfad: %1").arg(K_Modulpfad),LOG_DEBUG));
-		Melden(Meldung("9ac70e7688f8437eb1b72e6737b4c445",tr("Modul: %1").arg(K_Modul),LOG_DEBUG));
-	}
-	TCPstarten();
-	//Modul laden
 
-	//Benutzer wechseln
+	TCPstarten();
+
+	if(!ModulLaden(K_Einstellungen->value("Modul",MODUL).toString(),K_Einstellungen->value("Modulpfad",MODULE).toString()))
+		return;
+
 	if(!KontextWechseln(K_Einstellungen->value("Benutzer",BENUTZER).toString(),K_Einstellungen->value("Gruppe",GRUPPE).toString()))
 		return;
 
@@ -97,10 +93,16 @@ void Steuerung::NeuerKlient(QObject *dienst)
 }
 void Steuerung::DatenVerteilen(const QString &daten)
 {
+	if (K_Protokoll==Protokolltiefe::Debug)
+		Melden(Meldung("1bf20681b80a42c191b906560bb6647a",tr("Daten empfangen vom Modul: %1").arg(daten),LOG_DEBUG));
 	for( auto Klient : *K_Klienten)
 	{
 		if(Klient->state()==QAbstractSocket::ConnectedState)
+		{
+			if (K_Protokoll==Protokolltiefe::Debug)
+				Melden(Meldung("6733089a635b45f7ae0d27c3ecaf518b",tr("Sende an Klient %1").arg(Klient->peerAddress().toString()),LOG_DEBUG));
 			Klient->write(daten.toLocal8Bit());
+		}
 	}
 }
 void Steuerung::KlientLoeschen(QObject *klient)
@@ -205,4 +207,57 @@ void Steuerung::TCPstarten()
 	}
 	connect(K_Klientensammler,SIGNAL(mapped(QObject*)),this,SLOT(NeuerKlient(QObject*)));
 	connect(K_Klientloescher,SIGNAL(mapped(QObject*)),this,SLOT(KlientLoeschen(QObject*)));
+}
+bool Steuerung::ModulLaden(const QString modulname, const QString &pfad)
+{
+	if (K_Protokoll==Protokolltiefe::Debug)
+	{
+		Melden(Meldung("35b01b5da0cc44dcb04822de636f620b",tr("Modulpfad: %1").arg(pfad),LOG_DEBUG));
+		Melden(Meldung("9ac70e7688f8437eb1b72e6737b4c445",tr("Modul: %1").arg(modulname),LOG_DEBUG));
+	}
+	QString Datei;
+	QDirIterator Verzeichis(pfad,QDirIterator::Subdirectories);
+	bool ModulGefunden=false;
+	while (Verzeichis.hasNext())
+	{
+		Datei=Verzeichis.next();
+		if (Verzeichis.fileInfo().isFile())
+		{
+			if (K_Protokoll==Protokolltiefe::Debug)
+				Melden(Meldung("de0b1026c38040708422dbbb6b512d61",tr("Untersuche Datei %1 auf eine Erweiterung").arg(Datei),LOG_DEBUG));
+			QPluginLoader ErweiterungLesen(Datei);
+			QObject *Erweiterung = ErweiterungLesen.instance();
+			if(Erweiterung)
+			{
+				if (K_Protokoll==Protokolltiefe::Debug)
+					Melden(Meldung("64016fc20c8e434a98418514639ab699",tr("Untersuche Datei %1 auf eine gpsd-tcp Erweiterung").arg(Datei),LOG_DEBUG));
+				Pluginfabrik* gpsd_tcpd_Erweiterung= qobject_cast<Pluginfabrik*>(Erweiterung);
+				if(gpsd_tcpd_Erweiterung)
+				{
+					if (K_Protokoll==Protokolltiefe::Debug)
+						Melden(Meldung("e04e03ea37294065b95590b9052c8081",tr("%1 ist eine gpsd-tcp Erweiterung").arg(Datei),LOG_DEBUG));
+					if(gpsd_tcpd_Erweiterung->plugin(this)->Name() == modulname )
+					{
+						if (K_Protokoll==Protokolltiefe::Debug)
+							Melden(Meldung("38395376945042999326095790667f8e",tr("Modul %1 gefunden.").arg(modulname),LOG_DEBUG));
+						ModulGefunden=true;
+						connect(gpsd_tcpd_Erweiterung->plugin(this)->Erweiterung(this),SIGNAL(Daten(const QString&)),this,SLOT(DatenVerteilen(QString)));
+						break;
+					}
+				}
+
+			}
+			else
+			{
+				if (K_Protokoll==Protokolltiefe::Debug)
+					Melden(Meldung("5f0663b236b24fb28a5b7066f93ddd1f",tr("Konnte %1 nicht verarbeiten.").arg(Datei),LOG_DEBUG));
+			}
+		}
+	}
+	if (!ModulGefunden)
+	{
+		Melden(Meldung("a19f89878e354485aa86f4e54cd0e76d",tr("Das Modul %1 konnte nicht gefunden werden.").arg(modulname),LOG_CRIT));
+		QCoreApplication::quit();
+	}
+	return ModulGefunden;
 }
