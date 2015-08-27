@@ -91,6 +91,7 @@ void Steuerung::loslegen()
 
 	QTcpServer *Datendienst=Q_NULLPTR;
 	K_Klientensammler=new QSignalMapper(this);
+	K_Klientloescher=new QSignalMapper(this);
 	for( auto Dienst : K_Einstellungen->childGroups())
 	{
 		if(Dienst.toUpper().startsWith("DIENST"))
@@ -130,6 +131,7 @@ void Steuerung::loslegen()
 		}
 	}
 	connect(K_Klientensammler,SIGNAL(mapped(QObject*)),this,SLOT(NeuerKlient(QObject*)));
+	connect(K_Klientloescher,SIGNAL(mapped(QObject*)),this,SLOT(KlientLoeschen(QObject*)));
 	//Modul laden
 
 	//Benutzer wechseln
@@ -175,6 +177,22 @@ void Steuerung::NeuerKlient(QObject *dienst)
 {
 	QTcpSocket* Klient =dynamic_cast<QTcpServer*> (dienst)->nextPendingConnection();
 	if (K_Protokoll >= Protokolltiefe::Info)
-		Melden(Meldung("a32a5261338d422d8e27dc832e1c6e90",tr("Verbindung von %1").arg(Klient->peerAddress().toString()),LOG_INFO));
+		Melden(Meldung("a32a5261338d422d8e27dc832e1c6e90",tr("Verbindung von %1.").arg(Klient->peerAddress().toString()),LOG_INFO));
 	K_Klienten->append(Klient);
+	connect(Klient, SIGNAL(disconnected()), K_Klientloescher, SLOT(map()));
+	K_Klientloescher->setMapping(Klient,Klient);
+}
+void Steuerung::DatenVerteilen(const QString &daten)
+{
+	for( auto Klient : *K_Klienten)
+	{
+		if(Klient->state()==QAbstractSocket::ConnectedState)
+			Klient->write(daten.toLocal8Bit());
+	}
+}
+void Steuerung::KlientLoeschen(QObject *klient)
+{
+	if (K_Protokoll >= Protokolltiefe::Info)
+		Melden(Meldung("fcea41ff29354995b415d9dce03fcdf7",tr("Verbindung von %1 getrennt.").arg(dynamic_cast<QTcpSocket*> (klient)->peerAddress().toString()),LOG_INFO));
+	K_Klienten->removeOne(dynamic_cast<QTcpSocket*> (klient));
 }

@@ -82,65 +82,74 @@
         <translation>Run as user: %1(%2) and group: %3(%4)</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="102"/>
+        <location filename="../Quellen/Steuerung.cpp" line="103"/>
         <source>Anschlussnummer %1 ist ungültig. Ignoriere %2.</source>
         <translation>Port number %1 are invalid. %2 will be ignored.</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="109"/>
+        <location filename="../Quellen/Steuerung.cpp" line="110"/>
         <source>Adresse %1 ist ungültig. Ignoriere %2.</source>
         <translation>Address %1 is invalid. %2 will be ignored.</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="113"/>
+        <location filename="../Quellen/Steuerung.cpp" line="114"/>
         <source>Erstelle: %1 Adresse: %2 Anschluss: %3</source>
         <translation>Create %1 for address %2 on port %3</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="119"/>
+        <location filename="../Quellen/Steuerung.cpp" line="120"/>
         <source>Konnte %1 nicht starten.
 %2</source>
         <translation>Can&apos;t start %1.
 %2</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="127"/>
+        <location filename="../Quellen/Steuerung.cpp" line="128"/>
         <source>Lausche für %1 auf %2 Anschluss %3</source>
         <translation>Listen for %1 on %2 port %3</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="139"/>
+        <location filename="../Quellen/Steuerung.cpp" line="141"/>
         <source>Konnte nicht in den Benutzerkontext %1 wechseln.
 %2</source>
         <translation>Can&apos;t change user to %1.
 %2</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="146"/>
+        <location filename="../Quellen/Steuerung.cpp" line="148"/>
         <source>Konnte nicht in den Gruppenkontext %1 wechseln.
 %2</source>
         <translation>Can&apos;t change the group to %1.
 %2</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="151"/>
+        <location filename="../Quellen/Steuerung.cpp" line="153"/>
         <source>Bereit für die Anfragen.</source>
         <translation>Ready for requests.</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="155"/>
+        <location filename="../Quellen/Steuerung.cpp" line="157"/>
         <source>Beende ...</source>
         <translation>closing ...</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="171"/>
+        <location filename="../Quellen/Steuerung.cpp" line="173"/>
         <source>Ungültige Protokolltiefe %1, benutze Info.</source>
         <translation>Loglevel %1 are invalid, using level info for now.</translation>
     </message>
     <message>
-        <location filename="../Quellen/Steuerung.cpp" line="178"/>
+        <location filename="../Quellen/Steuerung.cpp" line="180"/>
+        <source>Verbindung von %1.</source>
+        <translation>Connection from %1.</translation>
+    </message>
+    <message>
+        <location filename="../Quellen/Steuerung.cpp" line="196"/>
+        <source>Verbindung von %1 getrennt.</source>
+        <translation>Connection from %1 closed.</translation>
+    </message>
+    <message>
         <source>Verbindung von %1</source>
-        <translation>Connetion from %1</translation>
+        <translation type="vanished">Connetion from %1</translation>
     </message>
 </context>
 </TS>

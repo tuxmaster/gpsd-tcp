@@ -43,6 +43,8 @@ class Steuerung : public QObject
 	private Q_SLOTS:
 		void				loslegen();
 		void				NeuerKlient(QObject *dienst);
+		void				KlientLoeschen(QObject *klient);
+		void				DatenVerteilen(const QString &daten);
 
 	private:
 		void				Melden(Meldung m)const;
@@ -52,6 +54,7 @@ class Steuerung : public QObject
 		QString				K_Modulpfad;
 		QString				K_Modul;
 		QSignalMapper		*K_Klientensammler;
+		QSignalMapper		*K_Klientloescher;
 		QList<QTcpSocket*>	*K_Klienten;
 
 };
