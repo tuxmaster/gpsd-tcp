@@ -48,6 +48,8 @@ class Steuerung : public QObject
 
 	private:
 		void				Melden(Meldung m)const;
+		void				TCPstarten();
+		bool				KontextWechseln(const QString &nutzer, const QString &gruppe);
 		QSettings			*K_Einstellungen;
 		Protokolltiefe		K_Protokoll;
 		Protokolltiefe		ProtokollTextNachZahl(const QString &text) const;

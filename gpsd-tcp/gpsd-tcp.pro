@@ -18,7 +18,9 @@ SOURCES += \
 HEADERS += \
     Quellen/Vorgaben.h \
     Quellen/Meldung.h \
-    Quellen/Steuerung.h
+    Quellen/Steuerung.h \
+    Quellen/Plugin.h \
+    Quellen/Pluginfabrik.h
 
 TRANSLATIONS    =  Uebersetzungen/gpsd-tcp_en.ts
 
