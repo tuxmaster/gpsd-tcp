@@ -16,6 +16,7 @@
 */
 
 #include "Dummy.h"
+#include "Vorgaben.h"
 
 Dummy::Dummy(QObject *eltern) : QObject(eltern)
 {
@@ -25,6 +26,26 @@ Dummy::Dummy(QObject *eltern) : QObject(eltern)
 }
 void Dummy::DatenSenden()
 {
-	Q_EMIT Daten("Muhhhhhhhhhhhhhhh");
+	QDateTime Zeit=QDateTime::currentDateTime();
+	static bool GPRMC=true;
+	QString Antwort;
+	if (GPRMC)
+	{
+		Antwort=QString("$GPRMC,%1,A,%2,%3,%4,%5,%6,%7,%8,0.0,E,S\n").arg(Zeit.toString("HHmmss.z"))
+																   .arg(BREITE).arg(BREITE_RICHTUNG)
+																   .arg(LAENGE).arg(LAENGE_RICHTUNG)
+																   .arg(GESCHWINDIGKEIT).arg(KURS)
+																   .arg(Zeit.toString("ddMMyy"));
+		GPRMC=false;
+	}
+	else
+	{
+		Antwort=QString("$GPGGA,%1,%2,%3,%4,%5,1,%6,0.0,%7,M,0.0,M,,\n").arg(Zeit.toString("HHmmss.z"))
+																		.arg(BREITE).arg(BREITE_RICHTUNG)
+																		.arg(LAENGE).arg(LAENGE_RICHTUNG)
+																		.arg(ANZAHL_SATELITEN).arg(HOEHE_DER_ANTENNE);
+		GPRMC=true;
+	}
+	Q_EMIT Daten(Antwort);
 }
 

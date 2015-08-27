@@ -15,7 +15,8 @@ RCC_DIR		= tmp/rcc
 
 HEADERS += \
     Quellen/Erweiterung_Dummy.h \
-    Quellen/Dummy.h
+    Quellen/Dummy.h \
+    Quellen/Vorgaben.h
 
 SOURCES += \
     Quellen/Dummy.cpp
