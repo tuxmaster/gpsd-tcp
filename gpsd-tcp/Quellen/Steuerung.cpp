@@ -71,7 +71,7 @@ void Steuerung::beenden()
 
 void Steuerung::Melden(Meldung m) const
 {
-	 sd_journal_send(QString("MESSAGE=%1").arg(m.TextHolen()).toUtf8().constData(),QString("MESSAGE_ID=%1").arg(m.IDHolen()).toUtf8().constData(),
+	 sd_journal_send(QString("MESSAGE=%1").arg(m.TextHolen().simplified()).toUtf8().constData(),QString("MESSAGE_ID=%1").arg(m.IDHolen()).toUtf8().constData(),
 					 QString("PRIORITY=%1").arg(m.PrioritaetHolen()).toUtf8().constData(),QString("VERSION=%1").arg(VERSION).toUtf8().constData(),NULL);
 }
 Protokolltiefe Steuerung::ProtokollTextNachZahl(const QString &text) const
@@ -104,7 +104,7 @@ void Steuerung::DatenVerteilen(const QString &daten)
 		{
 			if (K_Protokoll==Protokolltiefe::Debug)
 				Melden(Meldung("6733089a635b45f7ae0d27c3ecaf518b",tr("Sende an Klient %1").arg(Klient->peerAddress().toString()),LOG_DEBUG));
-			Klient->write(daten.toLocal8Bit());
+			Klient->write(daten.toLatin1());
 		}
 	}
 }

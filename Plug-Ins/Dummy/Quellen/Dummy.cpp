@@ -26,12 +26,12 @@ Dummy::Dummy(QObject *eltern) : QObject(eltern)
 }
 void Dummy::DatenSenden()
 {
-	QDateTime Zeit=QDateTime::currentDateTime();
+	QDateTime Zeit=QDateTime::currentDateTime().toUTC();
 	static bool GPRMC=true;
 	QString Antwort;
 	if (GPRMC)
 	{
-		Antwort=QString("$GPRMC,%1,A,%2,%3,%4,%5,%6,%7,%8,0.0,E,S\n").arg(Zeit.toString("HHmmss.z"))
+		Antwort=QString("$GPRMC,%1,A,%2,%3,%4,%5,%6,%7,%8,0.0,E,S").arg(Zeit.toString("HHmmss.zzz"))
 																   .arg(BREITE).arg(BREITE_RICHTUNG)
 																   .arg(LAENGE).arg(LAENGE_RICHTUNG)
 																   .arg(GESCHWINDIGKEIT).arg(KURS)
@@ -40,12 +40,12 @@ void Dummy::DatenSenden()
 	}
 	else
 	{
-		Antwort=QString("$GPGGA,%1,%2,%3,%4,%5,1,%6,0.0,%7,M,0.0,M,,\n").arg(Zeit.toString("HHmmss.z"))
+		Antwort=QString("$GPGGA,%1,%2,%3,%4,%5,1,%6,0.0,%7,M,0.0,M,,").arg(Zeit.toString("HHmmss"))
 																		.arg(BREITE).arg(BREITE_RICHTUNG)
 																		.arg(LAENGE).arg(LAENGE_RICHTUNG)
 																		.arg(ANZAHL_SATELITEN).arg(HOEHE_DER_ANTENNE);
 		GPRMC=true;
 	}
-	Q_EMIT Daten(Antwort);
+	Q_EMIT Daten(Antwort.append("\r\n"));
 }
 
