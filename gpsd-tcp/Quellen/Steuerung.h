@@ -48,7 +48,7 @@ class Steuerung : public QObject
 
 	private:
 		void				Melden(Meldung m)const;
-		void				TCPstarten();
+		bool				TCPstarten();
 		bool				KontextWechseln(const QString &nutzer, const QString &gruppe);
 		bool				ModulLaden(const QString modulname,const QString &pfad);
 		QSettings			*K_Einstellungen;

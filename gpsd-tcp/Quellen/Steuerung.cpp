@@ -47,10 +47,12 @@ Steuerung::~Steuerung()
 
 void Steuerung::loslegen()
 {
-	Melden(Meldung("a475b92d2cc84b63a233e7a027442c5f",tr("Starte ...")));
+	if (K_Protokoll >= Protokolltiefe::Info)
+		Melden(Meldung("a475b92d2cc84b63a233e7a027442c5f",tr("Starte ...")));
 	K_Protokoll=ProtokollTextNachZahl(K_Einstellungen->value("Protokollebene","Info").toString());
 
-	TCPstarten();
+	if(!TCPstarten())
+		return;
 
 	if(!ModulLaden(K_Einstellungen->value("Modul",MODUL).toString(),K_Einstellungen->value("Modulpfad",MODULE).toString()))
 		return;
@@ -63,7 +65,8 @@ void Steuerung::loslegen()
 }
 void Steuerung::beenden()
 {
-	Melden(Meldung("3c9ac521e2e6487995ac623d35b06d70",tr("Beende ...")));
+	if (K_Protokoll >= Protokolltiefe::Info)
+		Melden(Meldung("3c9ac521e2e6487995ac623d35b06d70",tr("Beende ...")));
 }
 
 void Steuerung::Melden(Meldung m) const
@@ -159,8 +162,9 @@ bool Steuerung::KontextWechseln(const QString &nutzer, const QString &gruppe)
 	}
 	return true;
 }
-void Steuerung::TCPstarten()
+bool Steuerung::TCPstarten()
 {
+	bool gueltigerDienst=false;
 	K_Klienten = new QList<QTcpSocket*>;
 	int Anschluss=0;
 	QString Adresse;
@@ -192,11 +196,13 @@ void Steuerung::TCPstarten()
 			Datendienst=new QTcpServer(this);
 			if(!Datendienst->listen(QHostAddress(Adresse),Anschluss))
 			{
-				Melden(Meldung("d91c632a84b54f3cb634485cf007d485",tr("Konnte %1 nicht starten.\n%2").arg(Dienst).arg(Datendienst->errorString()),LOG_ERR));
+				if(K_Protokoll >=Protokolltiefe::Fehler)
+					Melden(Meldung("d91c632a84b54f3cb634485cf007d485",tr("Konnte %1 nicht starten.\n%2").arg(Dienst).arg(Datendienst->errorString()),LOG_ERR));
 				Datendienst->deleteLater();
 			}
 			else
 			{
+				gueltigerDienst=true;
 				connect(Datendienst, SIGNAL(newConnection()), K_Klientensammler, SLOT(map()));
 				K_Klientensammler->setMapping(Datendienst,Datendienst);
 				if(K_Protokoll >=Protokolltiefe::Info)
@@ -207,6 +213,13 @@ void Steuerung::TCPstarten()
 	}
 	connect(K_Klientensammler,SIGNAL(mapped(QObject*)),this,SLOT(NeuerKlient(QObject*)));
 	connect(K_Klientloescher,SIGNAL(mapped(QObject*)),this,SLOT(KlientLoeschen(QObject*)));
+	if(!gueltigerDienst)
+	{
+		if(K_Protokoll >=Protokolltiefe::Fehler)
+			Melden(Meldung("217dfdf7f21949b08a37ae5dd20d88f6",tr("Es konnte kein Dienst gestartet werden."),LOG_ERR));
+		QCoreApplication::quit();
+	}
+	return gueltigerDienst;
 }
 bool Steuerung::ModulLaden(const QString modulname, const QString &pfad)
 {
