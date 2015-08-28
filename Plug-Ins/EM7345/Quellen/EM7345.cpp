@@ -15,8 +15,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+
 #include "EM7345.h"
 #include "Vorgaben.h"
+
+#include <QtSerialPort>
 
 #include <syslog.h>
 
@@ -35,4 +38,21 @@ EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern
 void EM7345::starten()
 {
 	Q_EMIT MeldungSenden(Meldung("a42c182ded374fcb86fd8bd605d9cfa6",tr("%1 benutze Anschluss %2").arg(NAME).arg(K_Anschluss),LOG_INFO));
+	K_Modem =new QSerialPort(this);
+	connect(K_Modem,SIGNAL(readyRead()),this,SLOT(DatenZumLesen()));
+	K_Modem->setPortName(K_Anschluss);
+	if(!K_Modem->setBaudRate(QSerialPort::Baud115200))
+	{
+		Q_EMIT MeldungSenden(Meldung("e6feee5d8f964dae9861a094e15014a6",tr("%1 Kann die Baudrate nicht setzen.\n%2").arg(NAME).arg(K_Modem->errorString()),LOG_CRIT));
+		return;
+	}
+	if(!K_Modem->open(QIODevice::ReadWrite))
+	{
+		Q_EMIT MeldungSenden(Meldung("4cae08cb4a704affa343a6911deb009d",trUtf8("%1 Kann den Anschluss nicht öffnen.\n%2").arg(NAME).arg(K_Modem->errorString()),LOG_CRIT));
+		return;
+	}
+}
+void EM7345::DatenZumLesen()
+{
+
 }

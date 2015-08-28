@@ -21,6 +21,7 @@
 #include <QtCore>
 #include "../../gpsd-tcp/Quellen/Meldung.h"
 
+class QSerialPort;
 class EM7345 : public QObject
 {
 	Q_OBJECT
@@ -33,10 +34,13 @@ class EM7345 : public QObject
 
 	private Q_SLOTS:
 		void			starten();
+		void			DatenZumLesen();
 
 	private:
 		const QSettings	*K_Konfiguration;
 		QString			K_Anschluss;
+		int				K_ID;
+		QSerialPort*	K_Modem;
 
 };
 
