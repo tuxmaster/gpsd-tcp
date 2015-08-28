@@ -19,6 +19,7 @@
 #define EM7345_H
 
 #include <QtCore>
+#include "../../gpsd-tcp/Quellen/Meldung.h"
 
 class EM7345 : public QObject
 {
@@ -27,10 +28,15 @@ class EM7345 : public QObject
 		explicit EM7345(QObject *eltern, const QSettings *konfiguration);
 
 	Q_SIGNALS:
-		void	          Daten(const QString &daten);
+		void			Daten(const QString &daten);
+		void			MeldungSenden(Meldung meldung);
+
+	private Q_SLOTS:
+		void			starten();
 
 	private:
-		const QSettings  *K_Konfiguration;
+		const QSettings	*K_Konfiguration;
+		QString			K_Anschluss;
 
 };
 

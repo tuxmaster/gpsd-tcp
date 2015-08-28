@@ -16,9 +16,17 @@
 */
 
 #include "EM7345.h"
+#include "Vorgaben.h"
+
+#include <syslog.h>
 
 EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern)
 {
 	K_Konfiguration=konfiguration;
+	K_Anschluss=K_Konfiguration->value("EM7345/Anschluss",ANSCHLUSS).toString();
+	QTimer::singleShot(0,this,SLOT(starten()));
 }
-
+void EM7345::starten()
+{
+	Q_EMIT MeldungSenden(Meldung("a42c182ded374fcb86fd8bd605d9cfa6",tr("%1 benutze Anschluss %2").arg(NAME).arg(K_Anschluss),LOG_INFO));
+}

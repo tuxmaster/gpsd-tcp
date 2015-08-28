@@ -20,6 +20,8 @@
 
 #include <QtCore>
 
+#include "../../gpsd-tcp/Quellen/Meldung.h"
+
 class Dummy : public QObject
 {
 	Q_OBJECT
@@ -28,6 +30,7 @@ class Dummy : public QObject
 
 	Q_SIGNALS:
 		void	Daten(const QString &daten);
+		void	MeldungSenden(Meldung meldung);
 
 	private Q_SLOTS:
 		void	DatenSenden();

@@ -45,9 +45,9 @@ class Steuerung : public QObject
 		void				NeuerKlient(QObject *dienst);
 		void				KlientLoeschen(QObject *klient);
 		void				DatenVerteilen(const QString &daten);
+		void				Melden(Meldung meldung) const;
 
 	private:
-		void				Melden(Meldung m)const;
 		bool				TCPstarten();
 		bool				KontextWechseln(const QString &nutzer, const QString &gruppe);
 		bool				ModulLaden(const QString modulname,const QString &pfad);

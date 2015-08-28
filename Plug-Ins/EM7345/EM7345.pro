@@ -15,7 +15,8 @@ RCC_DIR		= tmp/rcc
 
 HEADERS += \
     Quellen/Erweiterung_EM7345.h \
-    Quellen/EM7345.h
+    Quellen/EM7345.h \
+    Quellen/Vorgaben.h
 
 SOURCES += \
     Quellen/EM7345.cpp
