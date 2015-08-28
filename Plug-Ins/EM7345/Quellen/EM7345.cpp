@@ -22,6 +22,12 @@
 
 EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern)
 {
+	QTranslator Uebersetzung;
+	Uebersetzung.load(QString("%1_%2").arg(NAME).arg(QLocale::system().name()),QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+	if((Uebersetzung.isEmpty()) && (!QLocale::system().name().startsWith("de")))
+		Uebersetzung.load(QString("%1_en").arg(NAME),QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+	QCoreApplication::installTranslator(&Uebersetzung);
+
 	K_Konfiguration=konfiguration;
 	K_Anschluss=K_Konfiguration->value("EM7345/Anschluss",ANSCHLUSS).toString();
 	QTimer::singleShot(0,this,SLOT(starten()));
