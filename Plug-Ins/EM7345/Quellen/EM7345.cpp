@@ -17,8 +17,8 @@
 
 #include "EM7345.h"
 
-EM7345::EM7345(QObject *eltern) : QObject(eltern)
+EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern)
 {
-
+	K_Konfiguration=konfiguration;
 }
 

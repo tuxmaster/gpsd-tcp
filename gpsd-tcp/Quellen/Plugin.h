@@ -25,7 +25,7 @@ class Plugin
 			virtual					~Plugin(){}
 			virtual const QString	Version() const =0;
 			virtual const QString	Name()const =0;
-			virtual QObject			*Erweiterung(QObject *eltern)=0;
+			virtual QObject			*Erweiterung(QObject *eltern,const QSettings *konfiguration)=0;
 
 };
 Q_DECLARE_INTERFACE(Plugin, "de.terrortux.gpsd-tcp.Plugin")

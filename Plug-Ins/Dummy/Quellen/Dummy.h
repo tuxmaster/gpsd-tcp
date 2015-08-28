@@ -24,7 +24,7 @@ class Dummy : public QObject
 {
 	Q_OBJECT
 	public:
-		explicit Dummy(QObject *eltern = 0);
+		explicit Dummy(QObject *eltern, const QSettings *);
 
 	Q_SIGNALS:
 		void	Daten(const QString &daten);

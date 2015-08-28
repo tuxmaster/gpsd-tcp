@@ -24,10 +24,13 @@ class EM7345 : public QObject
 {
 	Q_OBJECT
 	public:
-		explicit EM7345(QObject *eltern = 0);
+		explicit EM7345(QObject *eltern, const QSettings *konfiguration);
 
 	Q_SIGNALS:
-		void	Daten(const QString &daten);
+		void	          Daten(const QString &daten);
+
+	private:
+		const QSettings  *K_Konfiguration;
 
 };
 

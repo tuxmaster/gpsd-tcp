@@ -30,7 +30,7 @@ class Erweiterung_EM7345 : public Plugin
 	public:
 		virtual const QString	Version() const Q_DECL_OVERRIDE {return "0.0.1";}
 		virtual const QString	Name()const Q_DECL_OVERRIDE {return "EM7345";}
-		virtual QObject			*Erweiterung(QObject *eltern) Q_DECL_OVERRIDE {if (!K_EM7345) K_EM7345=new EM7345(eltern); return K_EM7345;}
+		virtual QObject			*Erweiterung(QObject *eltern,const QSettings *konfiguration) Q_DECL_OVERRIDE {if (!K_EM7345) K_EM7345=new EM7345(eltern,konfiguration); return K_EM7345;}
 	private:
 		EM7345					*K_EM7345;
 };

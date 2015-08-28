@@ -18,7 +18,7 @@
 #include "Dummy.h"
 #include "Vorgaben.h"
 
-Dummy::Dummy(QObject *eltern) : QObject(eltern)
+Dummy::Dummy(QObject *eltern, const QSettings *) : QObject(eltern)
 {
 	QTimer *Uhr= new QTimer(this);
 	connect(Uhr,SIGNAL(timeout()),this,SLOT(DatenSenden()));

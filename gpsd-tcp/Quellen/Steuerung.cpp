@@ -254,7 +254,7 @@ bool Steuerung::ModulLaden(const QString modulname, const QString &pfad)
 						if (K_Protokoll==Protokolltiefe::Debug)
 							Melden(Meldung("38395376945042999326095790667f8e",tr("Modul %1 gefunden.").arg(modulname),LOG_DEBUG));
 						ModulGefunden=true;
-						connect(gpsd_tcpd_Erweiterung->plugin(this)->Erweiterung(this),SIGNAL(Daten(const QString&)),this,SLOT(DatenVerteilen(QString)));
+						connect(gpsd_tcpd_Erweiterung->plugin(this)->Erweiterung(this,K_Einstellungen),SIGNAL(Daten(const QString&)),this,SLOT(DatenVerteilen(QString)));
 						break;
 					}
 				}

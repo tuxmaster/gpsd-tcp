@@ -30,7 +30,7 @@ class Erweiterung_Dummy : public Plugin
 	public:
 		virtual const QString	Version() const Q_DECL_OVERRIDE {return "0.0.1";}
 		virtual const QString	Name()const Q_DECL_OVERRIDE {return "Dummy";}
-		virtual QObject			*Erweiterung(QObject *eltern) Q_DECL_OVERRIDE {if (!K_Dummy) K_Dummy=new Dummy(eltern); return K_Dummy;}
+		virtual QObject			*Erweiterung(QObject *eltern,const QSettings *konfiguration) Q_DECL_OVERRIDE {if (!K_Dummy) K_Dummy=new Dummy(eltern,konfiguration); return K_Dummy;}
 	private:
 		Dummy					*K_Dummy;
 };
