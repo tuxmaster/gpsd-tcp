@@ -31,7 +31,7 @@ void Dummy::DatenSenden()
 	QString Antwort;
 	if (GPRMC)
 	{
-		Antwort=QString("$GPRMC,%1,A,%2,%3,%4,%5,%6,%7,%8,0.0,E,S").arg(Zeit.toString("HHmmss.zzz"))
+		Antwort=QString("$GPRMC,%1,A,%2,%3,%4,%5,%6,%7,%8,0.0,E,A").arg(Zeit.toString("HHmmss.zzz"))
 																   .arg(BREITE).arg(BREITE_RICHTUNG)
 																   .arg(LAENGE).arg(LAENGE_RICHTUNG)
 																   .arg(GESCHWINDIGKEIT).arg(KURS)

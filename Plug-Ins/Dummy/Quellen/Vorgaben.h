@@ -18,14 +18,14 @@
 #ifndef VORGABEN
 #define VORGABEN
 
-#define BREITE "49.903752"
+#define BREITE "4954.22512"
 #define BREITE_RICHTUNG "N"
-#define LAENGE "8.065303"
+#define LAENGE "0803.91818"
 #define LAENGE_RICHTUNG "E"
-#define GESCHWINDIGKEIT "12" //In Knoten
-#define KURS "12"
+#define GESCHWINDIGKEIT "00.0" //In Knoten
+#define KURS "00.0"
 #define ANZAHL_SATELITEN "10"
-#define HOEHE_DER_ANTENNE "5.5"
+#define HOEHE_DER_ANTENNE "0.0"
 
 #endif // VORGABEN
 
