@@ -47,9 +47,9 @@ Steuerung::~Steuerung()
 
 void Steuerung::loslegen()
 {
+	K_Protokoll=ProtokollTextNachZahl(K_Einstellungen->value("Protokollebene","Info").toString());
 	if (K_Protokoll >= Protokolltiefe::Info)
 		Melden(Meldung("a475b92d2cc84b63a233e7a027442c5f",tr("Starte ...")));
-	K_Protokoll=ProtokollTextNachZahl(K_Einstellungen->value("Protokollebene","Info").toString());
 
 	if(!TCPstarten())
 		return;
