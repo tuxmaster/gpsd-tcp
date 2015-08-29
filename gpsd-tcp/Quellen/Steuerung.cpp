@@ -22,17 +22,26 @@
 #include "Vorgaben.h"
 #include "Pluginfabrik.h"
 
+#include <sys/socket.h>
 #include <systemd/sd-journal.h>
 #include <errno.h>
 #include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
 
+int Steuerung::sigtermFd[2];
 Steuerung::Steuerung(QObject *eltern) : QObject(eltern)
 {
 	K_Klienten=Q_NULLPTR;
 	K_Einstellungen=new QSettings(KONFIGDATEI,QSettings::IniFormat,this);
-	connect(QCoreApplication::instance(),SIGNAL(aboutToQuit()),this,SLOT(beenden()));
+	//connect(QCoreApplication::instance(),SIGNAL(aboutToQuit()),this,SLOT(beenden()));
+	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd))
+	{
+		Melden(Meldung("c16ef51833f54acf9ea2594d20783ef6",tr("Kann Prozesssteuerung nicht aufbauen."),LOG_CRIT));
+		return;
+	}
+	K_SocketBeenden = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
+	connect(K_SocketBeenden, SIGNAL(activated(int)),this,SLOT(beenden()));
 	QTimer::singleShot(0,this,SLOT(loslegen()));
 }
 Steuerung::~Steuerung()
@@ -65,8 +74,12 @@ void Steuerung::loslegen()
 }
 void Steuerung::beenden()
 {
-	if (K_Protokoll >= Protokolltiefe::Info)
-		Melden(Meldung("3c9ac521e2e6487995ac623d35b06d70",tr("Beende ...")));
+    K_SocketBeenden->setEnabled(false);
+    char tmp;
+    ::read(sigtermFd[1], &tmp, sizeof(tmp));
+    Q_EMIT SensorenAbschalten();
+    Melden(Meldung("3c9ac521e2e6487995ac623d35b06d70",tr("Beende ..."),LOG_INFO));
+    K_SocketBeenden->setEnabled(true);
 }
 
 void Steuerung::Melden(Meldung meldung) const
@@ -238,6 +251,8 @@ bool Steuerung::ModulLaden(const QString modulname, const QString &pfad)
 						ModulGefunden=true;
 						connect(gpsd_tcpd_Erweiterung->plugin(this)->Erweiterung(this,K_Einstellungen),SIGNAL(Daten(const QString&)),this,SLOT(DatenVerteilen(QString)));
 						connect(gpsd_tcpd_Erweiterung->plugin(this)->Erweiterung(this,K_Einstellungen),SIGNAL(MeldungSenden(Meldung)),this,SLOT(Melden(Meldung)));
+						connect(this,SIGNAL(SensorenAbschalten()),gpsd_tcpd_Erweiterung->plugin(this)->Erweiterung(this,K_Einstellungen),SLOT(Beenden()));
+						connect(gpsd_tcpd_Erweiterung->plugin(this)->Erweiterung(this,K_Einstellungen),SIGNAL(Beendet()),this,SLOT(SensorenAbgeschaltet()));
 						break;
 					}
 				}
@@ -249,4 +264,14 @@ bool Steuerung::ModulLaden(const QString modulname, const QString &pfad)
 	if (!ModulGefunden)
 		Melden(Meldung("a19f89878e354485aa86f4e54cd0e76d",tr("Das Modul %1 konnte nicht gefunden werden.").arg(modulname),LOG_CRIT));
 	return ModulGefunden;
+}
+void Steuerung::SensorenAbgeschaltet()
+{
+	Melden(Meldung("88d3484ea9ea4739bd0e345db5ac0caa",tr("Sensor abgeschaltet"),LOG_DEBUG));
+	QCoreApplication::quit();
+}
+void Steuerung::termSignalHandler(int)
+{
+    char a = 1;
+    ::write(sigtermFd[0], &a, sizeof(a));
 }

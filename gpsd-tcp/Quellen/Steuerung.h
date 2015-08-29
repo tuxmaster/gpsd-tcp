@@ -36,9 +36,13 @@ class Steuerung : public QObject
 	public:
 		explicit			Steuerung(QObject *eltern = Q_NULLPTR);
 							~Steuerung();
+		static void			termSignalHandler(int);
 
 	public Q_SLOTS:
 		void				beenden();
+
+	Q_SIGNALS:
+		void				SensorenAbschalten();
 
 	private Q_SLOTS:
 		void				loslegen();
@@ -46,6 +50,7 @@ class Steuerung : public QObject
 		void				KlientLoeschen(QObject *klient);
 		void				DatenVerteilen(const QString &daten);
 		void				Melden(Meldung meldung) const;
+		void				SensorenAbgeschaltet();
 
 	private:
 		bool				TCPstarten();
@@ -57,6 +62,8 @@ class Steuerung : public QObject
 		QSignalMapper		*K_Klientensammler;
 		QSignalMapper		*K_Klientloescher;
 		QList<QTcpSocket*>	*K_Klienten;
+		QSocketNotifier		*K_SocketBeenden;
+		static int			sigtermFd[2];
 
 };
 

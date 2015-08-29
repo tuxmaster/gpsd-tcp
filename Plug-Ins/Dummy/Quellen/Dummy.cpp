@@ -48,4 +48,7 @@ void Dummy::DatenSenden()
 	}
 	Q_EMIT Daten(Antwort.append("\r\n"));
 }
-
+void Dummy::Beenden()
+{
+	Q_EMIT Beendet();
+}

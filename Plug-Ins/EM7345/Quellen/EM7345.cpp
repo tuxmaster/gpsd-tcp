@@ -33,8 +33,21 @@ EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern
 
 	K_Konfiguration=konfiguration;
 	K_Anschluss=K_Konfiguration->value("EM7345/Anschluss",ANSCHLUSS).toString();
+	K_IDGesetzt=false;
 	QTimer::singleShot(0,this,SLOT(starten()));
 }
+void EM7345::Beenden()
+{
+	if(K_Modem->isOpen())
+	{
+		if(K_IDGesetzt)
+		{
+			K_Modem->write(QString("AT+XLSRSTOP=0,%1\r").arg(K_ID).toLocal8Bit());
+			Q_EMIT MeldungSenden(Meldung("113aae59435d470bb9673009708746ba",tr("%1 stoppe GPS").arg(NAME),LOG_DEBUG));
+		}
+	}
+}
+
 void EM7345::starten()
 {
 	Q_EMIT MeldungSenden(Meldung("a42c182ded374fcb86fd8bd605d9cfa6",tr("%1 benutze Anschluss %2").arg(NAME).arg(K_Anschluss),LOG_INFO));
@@ -51,8 +64,25 @@ void EM7345::starten()
 		Q_EMIT MeldungSenden(Meldung("4cae08cb4a704affa343a6911deb009d",trUtf8("%1 Kann den Anschluss nicht öffnen.\n%2").arg(NAME).arg(K_Modem->errorString()),LOG_CRIT));
 		return;
 	}
+	K_Modem->write("AT+XLCSLSR=1,1,,,,,1,,,,,\r");
 }
 void EM7345::DatenZumLesen()
 {
-
+	QString Daten=K_Modem->readAll();
+	Q_EMIT MeldungSenden(Meldung("70ebb46432b041d9b7aeb56356ef81e6",tr("%1 Daten empfangen: %2").arg(NAME).arg(Daten),LOG_DEBUG));
+	if(!K_IDGesetzt)
+	{
+		QString tmp=Daten.mid(Daten.indexOf("id")+3,Daten.size()-Daten.indexOf("OK"));
+		tmp=tmp.simplified();
+		K_IDGesetzt=true;
+		K_ID=tmp.toInt();
+		Q_EMIT MeldungSenden(Meldung("a8bf50df94134c5793127e0b37c96c51",QString("%1 KomandoID: %2").arg(NAME).arg(K_ID),LOG_DEBUG));
+		return;
+	}
+	if(Daten.contains("+XLSRSTOP: OK"))
+	{
+		Q_EMIT MeldungSenden(Meldung("0c883885b2c349cfb69f6b18b921b25b",tr("%1 GPS gestoppt.").arg(NAME),LOG_DEBUG));
+		Q_EMIT Beendet();
+		return;
+	}
 }

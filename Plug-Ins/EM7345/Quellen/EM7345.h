@@ -28,9 +28,13 @@ class EM7345 : public QObject
 	public:
 		explicit EM7345(QObject *eltern, const QSettings *konfiguration);
 
+	public Q_SLOTS:
+		void			Beenden();
+
 	Q_SIGNALS:
 		void			Daten(const QString &daten);
 		void			MeldungSenden(Meldung meldung);
+		void			Beendet();
 
 	private Q_SLOTS:
 		void			starten();
@@ -41,7 +45,7 @@ class EM7345 : public QObject
 		QString			K_Anschluss;
 		int				K_ID;
 		QSerialPort*	K_Modem;
-
+		bool			K_IDGesetzt;
 };
 
 #endif // EM7345_H

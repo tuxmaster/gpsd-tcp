@@ -28,9 +28,13 @@ class Dummy : public QObject
 	public:
 		explicit Dummy(QObject *eltern, const QSettings *);
 
+	public Q_SLOTS:
+		void	Beenden();
+
 	Q_SIGNALS:
 		void	Daten(const QString &daten);
 		void	MeldungSenden(Meldung meldung);
+		void	Beendet();
 
 	private Q_SLOTS:
 		void	DatenSenden();
