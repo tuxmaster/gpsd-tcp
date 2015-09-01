@@ -29,18 +29,87 @@
 #include <pwd.h>
 #include <unistd.h>
 
-int Steuerung::sigtermFd[2];
+/*! \class Meldung Meldung.h
+	\brief Eine %Meldung.
+
+	Jede %Meldung hat 3 Parameter.\n
+	ID, Text, Priorität.\n
+	\b ID Bescheibt die UUID der %Meldung.\n
+	Dies macht den Autausch über Sprachgrenzen einfacher, man nur die Nummer braucht.\n
+	\b Text Die eigentliche %Meldung.\n
+	\b Priorität Damit man festlegen kann, ab welchem Schweregrd man die Meldungen sehen möchte.
+*/
+
+/*!
+	\fn Meldung::Meldung(const QString &id, const QString &text)
+	\brief Erzeugt eine neue %Meldung.
+
+	Die %Meldung wird mit der Priorität \b LOG_INFO erzeugt.
+	\param[in] id Die UUID der %Meldung.
+	\param[in] text Der Text der %Meldung.
+*/
+
+/*!
+	\fn Meldung::Meldung(const QString &id, const QString &text, const int &prioritaet)
+	\brief Erzeugt eine neue %Meldung.
+
+	Die %Meldung wird mit der Priorität \b LOG_INFO erzeugt.
+	\param[in] id Die UUID der %Meldung.
+	\param[in] text Der Text der %Meldung.
+	\param[in] prioritaet Die Priorität der %Meldung.
+*/
+
+/*!
+	\fn const QString &Meldung::TextHolen() const
+	\brief Liefert den Text der %Meldung.
+	\return Den Text der %Meldung.
+*/
+
+/*!
+	\fn const QString &Meldung::IDHolen() const
+	\brief Liefert die UUID der %Meldung.
+	\return Die UUID der %Meldung.
+*/
+
+/*!
+	\fn const int &Meldung::PrioritaetHolen() const
+	\brief Liefert die Priorität der %Meldung.
+	\return Die Priorität der %Meldung.
+*/
+
+/*!
+	\fn static const QString &Meldung::Textprio(const int &prio)
+	\brief Liefert das Wort für die Priorität der %Meldung.
+	\param[in] prio Den Wert der Priorität.
+	\return Das Wort.
+*/
+
+
+/*!
+	\fn void Steuerung::SensorenAbschalten()
+	\brief Läßst den Senosor sich abschalten.
+
+	Das Signal muss an jeden Sensor weiter geleitet werden,
+	damit dieser die Hardware sauber beenden kann.
+*/
+
+int Steuerung::SIGTERM_Socked[2];
+
+/*!
+  \brief Erstelllt das Steuerungsobjekt.
+  \param[in] eltern Das Elternobjekt.
+*/
 Steuerung::Steuerung(QObject *eltern) : QObject(eltern)
 {
 	K_Klienten=Q_NULLPTR;
 	K_Einstellungen=new QSettings(KONFIGDATEI,QSettings::IniFormat,this);
 	//connect(QCoreApplication::instance(),SIGNAL(aboutToQuit()),this,SLOT(beenden()));
-	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd))
+	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, SIGTERM_Socked))
 	{
 		Melden(Meldung("c16ef51833f54acf9ea2594d20783ef6",tr("Kann Prozesssteuerung nicht aufbauen."),LOG_CRIT));
 		return;
 	}
-	K_SocketBeenden = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
+	K_SocketBeenden = new QSocketNotifier(SIGTERM_Socked[1], QSocketNotifier::Read, this);
 	connect(K_SocketBeenden, SIGNAL(activated(int)),this,SLOT(beenden()));
 	QTimer::singleShot(0,this,SLOT(loslegen()));
 }
@@ -72,23 +141,28 @@ void Steuerung::loslegen()
 	if(K_Protokoll >=Protokolltiefe::Info)
 		Melden(Meldung("a91b6e29651945378c619e50a629f8cf",trUtf8("Bereit für die Anfragen."),LOG_INFO));
 }
+/*!
+	\brief Wird von der Unix Signalsteuerung beim Signal SIGTERM aufgerufen.
+
+	Dies ist nötig um die Unix Signal korrekt an Qt zu übermitteln.
+*/
 void Steuerung::beenden()
 {
-    K_SocketBeenden->setEnabled(false);
-    char tmp;
-    ::read(sigtermFd[1], &tmp, sizeof(tmp));
-    Q_EMIT SensorenAbschalten();
-    Melden(Meldung("3c9ac521e2e6487995ac623d35b06d70",tr("Beende ..."),LOG_INFO));
-    K_SocketBeenden->setEnabled(true);
+	K_SocketBeenden->setEnabled(false);
+	char tmp;
+	::read(SIGTERM_Socked[1], &tmp, sizeof(tmp));
+	Q_EMIT SensorenAbschalten();
+	Melden(Meldung("3c9ac521e2e6487995ac623d35b06d70",tr("Beende ..."),LOG_INFO));
+	K_SocketBeenden->setEnabled(true);
 }
 
 void Steuerung::Melden(Meldung meldung) const
 {
-    if(meldung.PrioritaetHolen()>=K_Protokoll)
-        sd_journal_send(QString("MESSAGE=%1").arg(meldung.TextHolen().simplified()).toUtf8().constData(),QString("MESSAGE_ID=%1").arg(meldung.IDHolen()).toUtf8().constData(),
-                        QString("PRIORITY=%1").arg(meldung.PrioritaetHolen()).toUtf8().constData(),QString("VERSION=%1").arg(VERSION).toUtf8().constData(),NULL);
-    if(meldung.PrioritaetHolen()==LOG_CRIT)
-        QCoreApplication::quit();
+	if(meldung.PrioritaetHolen()>=K_Protokoll)
+		sd_journal_send(QString("MESSAGE=%1").arg(meldung.TextHolen().simplified()).toUtf8().constData(),QString("MESSAGE_ID=%1").arg(meldung.IDHolen()).toUtf8().constData(),
+						QString("PRIORITY=%1").arg(meldung.PrioritaetHolen()).toUtf8().constData(),QString("VERSION=%1").arg(VERSION).toUtf8().constData(),NULL);
+	if(meldung.PrioritaetHolen()==LOG_CRIT)
+		QCoreApplication::quit();
 }
 Protokolltiefe Steuerung::ProtokollTextNachZahl(const QString &text) const
 {
@@ -270,8 +344,14 @@ void Steuerung::SensorenAbgeschaltet()
 	Melden(Meldung("88d3484ea9ea4739bd0e345db5ac0caa",tr("Sensor abgeschaltet"),LOG_DEBUG));
 	QCoreApplication::quit();
 }
-void Steuerung::termSignalHandler(int)
+
+/*!
+  \brief Emfängt das Unix Signal SIGTERM.
+
+  Anschließend wird es via Unix Socked an das Programm übergeben.
+*/
+void Steuerung::Signal_SIGTERM_Verwaltung(int)
 {
-    char a = 1;
-    ::write(sigtermFd[0], &a, sizeof(a));
+	char a = 1;
+	::write(SIGTERM_Socked[0], &a, sizeof(a));
 }

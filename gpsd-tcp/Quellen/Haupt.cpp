@@ -17,25 +17,16 @@
 
 #include <QtCore>
 
-#include <signal.h>
-
 #include "Vorgaben.h"
 #include "Steuerung.h"
 
-/* void Signalsteuerung(int signal)
-{
-	if(signal==SIGTERM)
-	{
-		QCoreApplication::quit();
-	}
-}*/
+#include <signal.h>
 
 int main(int argc, char *argv[])
 {
 		QCoreApplication Qt(argc, argv);
-		//signal(SIGTERM,Signalsteuerung);
 		struct sigaction term;
-		term.sa_handler = Steuerung::termSignalHandler;
+		term.sa_handler = Steuerung::Signal_SIGTERM_Verwaltung;
 		sigemptyset(&term.sa_mask);
 		term.sa_flags |= SA_RESTART;
 		if (sigaction(SIGTERM, &term, 0) > 0)

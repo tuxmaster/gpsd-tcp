@@ -36,7 +36,7 @@ class Steuerung : public QObject
 	public:
 		explicit			Steuerung(QObject *eltern = Q_NULLPTR);
 							~Steuerung();
-		static void			termSignalHandler(int);
+		static void			Signal_SIGTERM_Verwaltung(int);
 
 	public Q_SLOTS:
 		void				beenden();
@@ -63,7 +63,7 @@ class Steuerung : public QObject
 		QSignalMapper		*K_Klientloescher;
 		QList<QTcpSocket*>	*K_Klienten;
 		QSocketNotifier		*K_SocketBeenden;
-		static int			sigtermFd[2];
+		static int			SIGTERM_Socked[2];
 
 };
 
