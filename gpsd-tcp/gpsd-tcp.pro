@@ -29,3 +29,6 @@ lrelease.input         = TRANSLATIONS
 lrelease.output        = ${QMAKE_FILE_BASE}.qm
 lrelease.commands      = $$[QT_INSTALL_BINS]/lrelease-qt5 ${QMAKE_FILE_IN} -qm Uebersetzungen/${QMAKE_FILE_BASE}.qm
 lrelease.CONFIG       += no_link target_predeps
+
+Dokumentation.commands = doxygen
+QMAKE_EXTRA_TARGETS += Dokumentation

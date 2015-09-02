@@ -29,6 +29,42 @@
 #include <pwd.h>
 #include <unistd.h>
 
+
+/*! \class Pluginfabrik Pluginfabrik.h
+	\brief Das Interface für die Verwaltung der Erweiterungen.
+*/
+
+/*!
+	\fn virtual Plugin* Pluginfabrik::plugin(QObject *eltern)
+	\brief Liefert eine Erweiterung.
+	\param[in,out] eltern Das Elternobjekt.
+	\return Der Zeiger auf die Erweiterung.
+*/
+
+/*! \class Plugin Plugin.h
+	\brief Das Interface für die Erweiterungen
+*/
+
+/*!
+	\fn virtual const QString Plugin::Version() const
+	\brief Liefert die Versionsnummer als Text.
+	\return Die Version als Text.
+*/
+
+/*!
+	\fn virtual const QString Plugin::Name() const
+	\brief Liefert den Namen.
+	\return Den Namen.
+*/
+
+/*!
+	\fn virtual QObject* Plugin::Erweiterung(QObject *eltern,const QSettings *konfiguration)
+	\brief Liefert ein Zeiger auf die Erweiterung.
+	\param[in,out] eltern Das Elternobjekt.
+	\param[in] konfiguration Die Programmkonfiguration.
+	\return Den Zeiger auf die Erweiterung.
+*/
+
 /*! \class Meldung Meldung.h
 	\brief Eine %Meldung.
 
@@ -84,6 +120,10 @@
 	\return Das Wort.
 */
 
+/*!
+  \class Steuerung Steuerung.h
+  \brief Die eigentliche Ablaufsteuerung.
+*/
 
 /*!
 	\fn void Steuerung::SensorenAbschalten()
@@ -97,7 +137,7 @@ int Steuerung::SIGTERM_Socked[2];
 
 /*!
   \brief Erstelllt das Steuerungsobjekt.
-  \param[in] eltern Das Elternobjekt.
+  \param[in,out] eltern Das Elternobjekt.
 */
 Steuerung::Steuerung(QObject *eltern) : QObject(eltern)
 {

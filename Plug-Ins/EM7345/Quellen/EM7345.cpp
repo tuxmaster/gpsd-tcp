@@ -23,6 +23,45 @@
 
 #include <syslog.h>
 
+
+/*! \class EM7345Plugin Erweiterung_EM7345.h
+	\brief Die Erweiterung für die Pluginfabrik.
+*/
+
+/*! \class Erweiterung_EM7345 Erweiterung_EM7345.h
+	\brief Die Erweiterung für die Steuerung.
+*/
+
+/*! \class EM7345 EM7345.h
+	\brief Das Modul für das %EM735 LTE Modem.
+
+	Getestet wurde es mit der Firmware 1.1.
+*/
+
+/*!
+	\fn EM7345::Daten(const QString &daten)
+	\brief Teilt der Steuerung mit, das neue Koordinaten empfangen worden sind.
+
+	Die Übermittlung erfolgt als NMEA Datensatz.
+*/
+
+/*!
+	\fn EM7345::MeldungSenden(Meldung meldung)
+	\brief Teilt der Steuerung mit, wenn eine %Meldung vorliegt.
+
+	Hierüber werden Debug-, Fehler- und Informationsmeldungen verschickt.
+*/
+
+/*!
+	\fn EM7345::Beendet()
+	\brief Teilt der Steuerung mit, wenn die Hardware abgeschaltet ist.
+*/
+
+/*!
+  \brief Erstelllt das %EM7345 Objekt.
+  \param[in,out] eltern Das Elternobjekt.
+  \param[in] konfiguration Die Konfiguration für das Programm
+*/
 EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern)
 {
 	QTranslator Uebersetzung;
@@ -36,6 +75,12 @@ EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern
 	K_IDGesetzt=false;
 	QTimer::singleShot(0,this,SLOT(starten()));
 }
+
+/*!
+	\brief Beendet die GPS Hardware.
+
+	Weist das Modem an, den GPS Empfänger abzuschalten.
+*/
 void EM7345::Beenden()
 {
 	if(K_Modem->isOpen())

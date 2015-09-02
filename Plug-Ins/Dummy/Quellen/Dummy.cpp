@@ -18,6 +18,48 @@
 #include "Dummy.h"
 #include "Vorgaben.h"
 
+
+/*! \class DummyPlugin Erweiterung_Dummy.h
+	\brief Die Erweiterung für die Pluginfabrik.
+*/
+
+/*! \class Erweiterung_Dummy Erweiterung_Dummy.h
+	\brief Die Erweiterung für die Steuerung.
+*/
+
+/*! \class Dummy Dummy.h
+	\brief Ein %Dummy
+
+	Diese Erweiterung dient nur zum Testen der Anbindung an den GPSD.\n
+	Es wird immer die selbe Koordinate gesendet.
+*/
+
+/*!
+	\fn Dummy::Daten(const QString &daten)
+	\brief Teilt der Steuerung mit, das neue Koordinaten empfangen worden sind.
+
+	Die Übermittlung erfolgt als NMEA Datensatz.
+*/
+
+/*!
+	\fn Dummy::MeldungSenden(Meldung meldung)
+	\brief Teilt der Steuerung mit, wenn eine %Meldung vorliegt.
+
+	Hierüber werden Debug-, Fehler- und Informationsmeldungen verschickt.
+*/
+
+/*!
+	\fn Dummy::Beendet()
+	\brief Teilt der Steuerung mit, wenn die Hardware abgeschaltet ist.
+*/
+
+/*!
+  \brief Erstelllt das Dummyobjekt.
+
+  Der 2. Parameter wird nicht ausgewertet, da es beim %Dummy nichts zu konfigurieren gibt.\n
+  Da hier keine Hardware zu Grunde liegt wirde jede Sekunde der Emfang simuliert.
+  \param[in,out] eltern Das Elternobjekt.
+*/
 Dummy::Dummy(QObject *eltern, const QSettings *) : QObject(eltern)
 {
 	QTimer *Uhr= new QTimer(this);
@@ -48,6 +90,10 @@ void Dummy::DatenSenden()
 	}
 	Q_EMIT Daten(Antwort.append("\r\n"));
 }
+
+/*!
+	\brief Beendet die GPS Hardware.
+*/
 void Dummy::Beenden()
 {
 	Q_EMIT Beendet();
