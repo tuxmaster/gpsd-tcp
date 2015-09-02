@@ -43,6 +43,7 @@
 	\brief Teilt der Steuerung mit, das neue Koordinaten empfangen worden sind.
 
 	Die Übermittlung erfolgt als NMEA Datensatz.
+	\param[out] daten Der NMEA Datensatz.
 */
 
 /*!
@@ -50,6 +51,7 @@
 	\brief Teilt der Steuerung mit, wenn eine %Meldung vorliegt.
 
 	Hierüber werden Debug-, Fehler- und Informationsmeldungen verschickt.
+	\param[out] meldung Die zu sendende %Meldung.
 */
 
 /*!
