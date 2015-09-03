@@ -39,6 +39,7 @@ class EM7345 : public QObject
 	private Q_SLOTS:
 		void			starten();
 		void			DatenZumLesen();
+		void			KeineDatenBekommen();
 
 	private:
 		const QSettings	*K_Konfiguration;
@@ -46,6 +47,7 @@ class EM7345 : public QObject
 		int				K_ID;
 		QSerialPort*	K_Modem;
 		bool			K_IDGesetzt;
+		QTimer			*K_Datenwachhund;
 };
 
 #endif // EM7345_H

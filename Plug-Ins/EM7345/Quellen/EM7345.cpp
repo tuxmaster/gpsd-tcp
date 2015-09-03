@@ -75,6 +75,9 @@ EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern
 	K_Konfiguration=konfiguration;
 	K_Anschluss=K_Konfiguration->value("EM7345/Anschluss",ANSCHLUSS).toString();
 	K_IDGesetzt=false;
+	K_Datenwachhund=new QTimer(this);
+	K_Datenwachhund->setInterval(WARTEN_AUF_DATEN*1000);
+	connect(K_Datenwachhund,SIGNAL(timeout()),this,SLOT(KeineDatenBekommen()));
 	QTimer::singleShot(0,this,SLOT(starten()));
 }
 
@@ -89,8 +92,10 @@ void EM7345::Beenden()
 	{
 		if(K_IDGesetzt)
 		{
+			K_Datenwachhund->stop();
 			K_Modem->write(QString("AT+XLSRSTOP=0,%1\r").arg(K_ID).toLocal8Bit());
 			Q_EMIT MeldungSenden(Meldung("113aae59435d470bb9673009708746ba",tr("%1 stoppe GPS").arg(NAME),LOG_DEBUG));
+			K_IDGesetzt=false;
 		}
 	}
 }
@@ -112,6 +117,7 @@ void EM7345::starten()
 		return;
 	}
 	K_Modem->write("AT+XLCSLSR=1,1,,,,,1,,,,,\r");
+	K_Datenwachhund->start();
 }
 void EM7345::DatenZumLesen()
 {
@@ -132,4 +138,14 @@ void EM7345::DatenZumLesen()
 		Q_EMIT Beendet();
 		return;
 	}
+	K_Datenwachhund->stop();
+	if(Daten.contains("ERROR"))
+	{
+		Q_EMIT MeldungSenden(Meldung("a51315bd6fdc437e99535fe638a61468",tr("%1 meldet ein Fehler: %2").arg(NAME).arg(Daten),LOG_ERR));
+		return;
+	}
+}
+void EM7345::KeineDatenBekommen()
+{
+	Q_EMIT MeldungSenden(Meldung("d6c664665e74468d85a321b20ea6b4c1",tr("%1 Keine Daten empfangen").arg(NAME),LOG_ERR));
 }
