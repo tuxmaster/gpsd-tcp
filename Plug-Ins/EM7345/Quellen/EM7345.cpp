@@ -157,11 +157,12 @@ void EM7345::DatenZumLesen()
 	/*
 		01	Breite -> muss aber konvertiert werden.
 		02	Länge -> muss aber konvertiert werden.
-		09	Datum
-		10  Zeit
+		09	Datum JJJJ/MM/TT
+		10  Zeit SS:MM:ss
 	 */
 	QString Breite=Liste[1];
 	QString Laenge=Liste[2];
+	QDateTime DatumZeit=QDateTime::fromString(QString("%1 %2").arg(Liste[9]).arg(Liste[10]),"yyyy/MM/dd hh:mm:ss");
 	//südliche oder westliche Angaben werden durch ein - gekennzeichnet.
 	if (Breite[Breite.size()-1]!='N')
 		Breite.prepend("-");
@@ -170,6 +171,7 @@ void EM7345::DatenZumLesen()
 	QGeoCoordinate WGS84=QGeoCoordinate(Breite.toDouble(),Laenge.toDouble());
 	qDebug()<<Daten;
 	qDebug()<<WGS84;
+	qDebug()<<DatumZeit;
 }
 void EM7345::KeineDatenBekommen()
 {
