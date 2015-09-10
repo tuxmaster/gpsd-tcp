@@ -20,6 +20,7 @@
 #include "Vorgaben.h"
 
 #include <QtSerialPort>
+#include <QGeoCoordinate>
 
 #include <syslog.h>
 
@@ -144,6 +145,31 @@ void EM7345::DatenZumLesen()
 		Q_EMIT MeldungSenden(Meldung("a51315bd6fdc437e99535fe638a61468",tr("%1 meldet ein Fehler: %2").arg(NAME).arg(Daten),LOG_ERR));
 		return;
 	}
+	QStringList Liste=Daten.split(",");
+	//Keine Lehrzeichen
+	for(int Eintrag=0;Eintrag<Liste.size();Eintrag++)
+		Liste[Eintrag]=Liste[Eintrag].simplified();
+	//Modem Status
+	Liste[0]=Liste[0].split(" ").at(1);
+	//Letzer Eintrag vom ATR Status befreien.
+	Liste[Liste.size()-1]=Liste[Liste.size()-1].split(" ").at(0);
+
+	/*
+		01	Breite -> muss aber konvertiert werden.
+		02	Länge -> muss aber konvertiert werden.
+		09	Datum
+		10  Zeit
+	 */
+	QString Breite=Liste[1];
+	QString Laenge=Liste[2];
+	//südliche oder westliche Angaben werden durch ein - gekennzeichnet.
+	if (Breite[Breite.size()-1]!='N')
+		Breite.prepend("-");
+	if (Laenge[Laenge.size()-1]!='E')
+		Laenge.prepend("-");
+	QGeoCoordinate WGS84=QGeoCoordinate(Breite.toDouble(),Laenge.toDouble());
+	qDebug()<<Daten;
+	qDebug()<<WGS84;
 }
 void EM7345::KeineDatenBekommen()
 {
