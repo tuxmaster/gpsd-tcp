@@ -96,7 +96,6 @@ void EM7345::Beenden()
 			K_Datenwachhund->stop();
 			K_Modem->write(QString("AT+XLSRSTOP=0,%1\r").arg(K_ID).toLocal8Bit());
 			Q_EMIT MeldungSenden(Meldung("113aae59435d470bb9673009708746ba",tr("%1 stoppe GPS").arg(NAME),LOG_DEBUG));
-			K_IDGesetzt=false;
 		}
 	}
 }
@@ -122,10 +121,24 @@ void EM7345::starten()
 }
 void EM7345::DatenZumLesen()
 {
-	QString Daten=K_Modem->readAll();
+	QString Daten=K_Modem->readAll().simplified();
 	Q_EMIT MeldungSenden(Meldung("70ebb46432b041d9b7aeb56356ef81e6",tr("%1 Daten empfangen: %2").arg(NAME).arg(Daten),LOG_DEBUG));
+	//Manchmal sendet das Modem Müll
+	if(Daten.startsWith("OK"))
+		return;
+	//Kennen wir die Meldung?
+	if( (!Daten.startsWith("+XLCSLSR:")) && (!Daten.startsWith("ERROR")) && (!Daten.startsWith("+XLSRSTOP:")) )
+	{
+		Q_EMIT MeldungSenden(Meldung("da93a946ab2f4b3fa1a9af2bcdb8f101",tr("%1 Nicht erwartete Daten: %2").arg(NAME).arg(Daten),LOG_WARNING));
+		return;
+	}
 	if(!K_IDGesetzt)
 	{
+		if (!Daten.contains("+XLCSLSR: request id"))
+		{
+			Q_EMIT MeldungSenden(Meldung("da6cd0ec261540cbb1a5c10443189a77",tr("%1 Konnte keine Komando ID bekommen.").arg(NAME),LOG_CRIT));
+			return;
+		}
 		QString tmp=Daten.mid(Daten.indexOf("id")+3,Daten.size()-Daten.indexOf("OK"));
 		tmp=tmp.simplified();
 		K_IDGesetzt=true;
@@ -135,6 +148,7 @@ void EM7345::DatenZumLesen()
 	}
 	if(Daten.contains("+XLSRSTOP: OK"))
 	{
+		K_IDGesetzt=false;
 		Q_EMIT MeldungSenden(Meldung("0c883885b2c349cfb69f6b18b921b25b",tr("%1 GPS gestoppt.").arg(NAME),LOG_DEBUG));
 		Q_EMIT Beendet();
 		return;
@@ -168,10 +182,13 @@ void EM7345::DatenZumLesen()
 		Breite.prepend("-");
 	if (Laenge[Laenge.size()-1]!='E')
 		Laenge.prepend("-");
+	Breite=Breite.left(Breite.size()-2);
+	Laenge=Laenge.left(Laenge.size()-2);
 	QGeoCoordinate WGS84=QGeoCoordinate(Breite.toDouble(),Laenge.toDouble());
-	qDebug()<<Daten;
-	qDebug()<<WGS84;
-	qDebug()<<DatumZeit;
+	qWarning()<<Daten;
+	qWarning()<<WGS84;
+	qWarning()<<DatumZeit;
+	qWarning()<<Breite<<"XX"<<Laenge;
 }
 void EM7345::KeineDatenBekommen()
 {

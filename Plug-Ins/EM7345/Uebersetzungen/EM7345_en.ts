@@ -39,5 +39,13 @@
         <source>%1 Keine Daten empfangen</source>
         <translation>%1 No data received</translation>
     </message>
+    <message>
+        <source>%1 Nicht erwartete Daten: %2</source>
+        <translation>%1 Unexpected data received: %2</translation>
+    </message>
+    <message>
+        <source>%1 Konnte keine Komando ID bekommen.</source>
+        <translation>%1 Can&apos;t get an command ID.</translation>
+    </message>
 </context>
 </TS>
