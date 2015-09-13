@@ -5,7 +5,7 @@ CONFIG	       += plugin
 VERSION		= 0.0.1
 TARGET		= em7345
 DESTDIR	        = ../
-QT		= core serialport positioning
+QT		= core serialport
 
 
 UI_DIR		= tmp/ui

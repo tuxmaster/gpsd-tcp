@@ -20,7 +20,6 @@
 #include "Vorgaben.h"
 
 #include <QtSerialPort>
-#include <QGeoCoordinate>
 
 #include <syslog.h>
 
@@ -176,19 +175,21 @@ void EM7345::DatenZumLesen()
 	 */
 	QString Breite=Liste[1];
 	QString Laenge=Liste[2];
+	QChar BreiteRichtung;
+	QChar LaengeRichtung;
+	int NMEA_BreiteGrad;
+	int NMEA_BreiteDezimal;
 	QDateTime DatumZeit=QDateTime::fromString(QString("%1 %2").arg(Liste[9]).arg(Liste[10]),"yyyy/MM/dd hh:mm:ss");
-	//südliche oder westliche Angaben werden durch ein - gekennzeichnet.
-	if (Breite[Breite.size()-1]!='N')
-		Breite.prepend("-");
-	if (Laenge[Laenge.size()-1]!='E')
-		Laenge.prepend("-");
+	DatumZeit.setTimeZone(QTimeZone::utc());
+	BreiteRichtung=Breite[Breite.size()-1];
+	LaengeRichtung=Laenge[Laenge.size()-1];
 	Breite=Breite.left(Breite.size()-2);
 	Laenge=Laenge.left(Laenge.size()-2);
-	QGeoCoordinate WGS84=QGeoCoordinate(Breite.toDouble(),Laenge.toDouble());
-	qWarning()<<Daten;
-	qWarning()<<WGS84;
-	qWarning()<<DatumZeit;
-	qWarning()<<Breite<<"XX"<<Laenge;
+	/*
+	 NMEA GGMM.mmmm
+	 */
+	qWarning()<<DatumZeit<<"\r\n"<<Breite<<BreiteRichtung<<"\r\n"<<Laenge<<LaengeRichtung;
+
 }
 void EM7345::KeineDatenBekommen()
 {
