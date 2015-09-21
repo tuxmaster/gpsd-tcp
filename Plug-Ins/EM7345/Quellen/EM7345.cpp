@@ -22,6 +22,7 @@
 #include <QtSerialPort>
 
 #include <syslog.h>
+#include <cmath>
 
 
 /*! \class EM7345Plugin Erweiterung_EM7345.h
@@ -175,10 +176,11 @@ void EM7345::DatenZumLesen()
 	 */
 	QString Breite=Liste[1];
 	QString Laenge=Liste[2];
+	QString NMEA_Breite,NMEA_Laenge;
 	QChar BreiteRichtung;
 	QChar LaengeRichtung;
-	int NMEA_BreiteGrad;
-	int NMEA_BreiteDezimal;
+	int Grad;
+	double Minutenanteil,Minuten;
 	QDateTime DatumZeit=QDateTime::fromString(QString("%1 %2").arg(Liste[9]).arg(Liste[10]),"yyyy/MM/dd hh:mm:ss");
 	DatumZeit.setTimeZone(QTimeZone::utc());
 	BreiteRichtung=Breite[Breite.size()-1];
@@ -187,8 +189,14 @@ void EM7345::DatenZumLesen()
 	Laenge=Laenge.left(Laenge.size()-2);
 	/*
 	 NMEA GGMM.mmmm
+	 Die Gradzahl entpsicht der Stelle vor dem Komma.
+	 Minuten der ganzahlige Anteil.
+	 Minutenanzteil ist der Rest des Minutenanteils
 	 */
-	qWarning()<<DatumZeit<<"\r\n"<<Breite<<BreiteRichtung<<"\r\n"<<Laenge<<LaengeRichtung;
+	Grad=std::floor(Breite.toDouble());
+	Minutenanteil=std::modf(((Breite.toDouble()-Grad)*60.0),&Minuten);
+	NMEA_Breite=QString("%1%2.%3").arg(Grad).arg(Minuten).arg(Minutenanteil);
+	qWarning()<<NMEA_Breite;
 
 }
 void EM7345::KeineDatenBekommen()
