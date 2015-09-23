@@ -193,10 +193,10 @@ void EM7345::DatenZumLesen()
 	 Minuten der ganzahlige Anteil.
 	 Minutenanzteil ist der Rest des Minutenanteils
 	 */
-	Grad=std::floor(Breite.toDouble());
+	Grad=std::trunc(Breite.toDouble());
 	Minutenanteil=std::modf(((Breite.toDouble()-Grad)*60.0),&Minuten);
-	NMEA_Breite=QString("%1%2.%3").arg(Grad).arg(Minuten).arg(Minutenanteil);
-	qWarning()<<NMEA_Breite;
+	NMEA_Breite=QString("%1%2").arg(Grad).arg(QString::number((Minuten+Minutenanteil),'f',5));
+	qWarning()<<NMEA_Breite<<QString("%1").arg(Minutenanteil);
 
 }
 void EM7345::KeineDatenBekommen()
