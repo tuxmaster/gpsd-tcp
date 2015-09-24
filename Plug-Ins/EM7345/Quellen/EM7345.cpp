@@ -121,32 +121,32 @@ void EM7345::starten()
 }
 void EM7345::DatenZumLesen()
 {
-	QString Daten=K_Modem->readAll().simplified();
-	Q_EMIT MeldungSenden(Meldung("70ebb46432b041d9b7aeb56356ef81e6",tr("%1 Daten empfangen: %2").arg(NAME).arg(Daten),LOG_DEBUG));
+	QString Rohdaten=K_Modem->readAll().simplified();
+	Q_EMIT MeldungSenden(Meldung("70ebb46432b041d9b7aeb56356ef81e6",tr("%1 Daten empfangen: %2").arg(NAME).arg(Rohdaten),LOG_DEBUG));
 	//Manchmal sendet das Modem Müll
-	if(Daten.startsWith("OK"))
+	if(Rohdaten.startsWith("OK"))
 		return;
 	//Kennen wir die Meldung?
-	if( (!Daten.startsWith("+XLCSLSR:")) && (!Daten.startsWith("ERROR")) && (!Daten.startsWith("+XLSRSTOP:")) )
+	if( (!Rohdaten.startsWith("+XLCSLSR:")) && (!Rohdaten.startsWith("ERROR")) && (!Rohdaten.startsWith("+XLSRSTOP:")) )
 	{
-		Q_EMIT MeldungSenden(Meldung("da93a946ab2f4b3fa1a9af2bcdb8f101",tr("%1 Nicht erwartete Daten: %2").arg(NAME).arg(Daten),LOG_WARNING));
+		Q_EMIT MeldungSenden(Meldung("da93a946ab2f4b3fa1a9af2bcdb8f101",tr("%1 Nicht erwartete Daten: %2").arg(NAME).arg(Rohdaten),LOG_WARNING));
 		return;
 	}
 	if(!K_IDGesetzt)
 	{
-		if (!Daten.contains("+XLCSLSR: request id"))
+		if (!Rohdaten.contains("+XLCSLSR: request id"))
 		{
 			Q_EMIT MeldungSenden(Meldung("da6cd0ec261540cbb1a5c10443189a77",tr("%1 Konnte keine Komando ID bekommen.").arg(NAME),LOG_CRIT));
 			return;
 		}
-		QString tmp=Daten.mid(Daten.indexOf("id")+3,Daten.size()-Daten.indexOf("OK"));
+		QString tmp=Rohdaten.mid(Rohdaten.indexOf("id")+3,Rohdaten.size()-Rohdaten.indexOf("OK"));
 		tmp=tmp.simplified();
 		K_IDGesetzt=true;
 		K_ID=tmp.toInt();
 		Q_EMIT MeldungSenden(Meldung("a8bf50df94134c5793127e0b37c96c51",QString("%1 KomandoID: %2").arg(NAME).arg(K_ID),LOG_DEBUG));
 		return;
 	}
-	if(Daten.contains("+XLSRSTOP: OK"))
+	if(Rohdaten.contains("+XLSRSTOP: OK"))
 	{
 		K_IDGesetzt=false;
 		Q_EMIT MeldungSenden(Meldung("0c883885b2c349cfb69f6b18b921b25b",tr("%1 GPS gestoppt.").arg(NAME),LOG_DEBUG));
@@ -154,12 +154,12 @@ void EM7345::DatenZumLesen()
 		return;
 	}
 	K_Datenwachhund->stop();
-	if(Daten.contains("ERROR"))
+	if(Rohdaten.contains("ERROR"))
 	{
-		Q_EMIT MeldungSenden(Meldung("a51315bd6fdc437e99535fe638a61468",tr("%1 meldet ein Fehler: %2").arg(NAME).arg(Daten),LOG_ERR));
+		Q_EMIT MeldungSenden(Meldung("a51315bd6fdc437e99535fe638a61468",tr("%1 meldet ein Fehler: %2").arg(NAME).arg(Rohdaten),LOG_ERR));
 		return;
 	}
-	QStringList Liste=Daten.split(",");
+	QStringList Liste=Rohdaten.split(",");
 	//Keine Lehrzeichen
 	for(int Eintrag=0;Eintrag<Liste.size();Eintrag++)
 		Liste[Eintrag]=Liste[Eintrag].simplified();
@@ -176,11 +176,16 @@ void EM7345::DatenZumLesen()
 	 */
 	QString Breite=Liste[1];
 	QString Laenge=Liste[2];
-	QString NMEA_Breite,NMEA_Laenge;
-	QChar BreiteRichtung;
-	QChar LaengeRichtung;
+	QString NMEA_Breite,NMEA_Laenge,Geschwindigkeit,Kurs,MagnetischeAbweichung;
+	QChar BreiteRichtung,LaengeRichtung,MagnetischeAbweichungRichtung,Signalintegritaet;
 	int Grad;
 	double Minutenanteil,Minuten;
+
+	Geschwindigkeit="00.0";
+	Kurs="00.0";
+	MagnetischeAbweichung="0.0";
+	MagnetischeAbweichungRichtung='E';
+	Signalintegritaet='A';
 	QDateTime DatumZeit=QDateTime::fromString(QString("%1 %2").arg(Liste[9]).arg(Liste[10]),"yyyy/MM/dd hh:mm:ss");
 	DatumZeit.setTimeZone(QTimeZone::utc());
 	BreiteRichtung=Breite[Breite.size()-1];
@@ -196,8 +201,17 @@ void EM7345::DatenZumLesen()
 	Grad=std::trunc(Breite.toDouble());
 	Minutenanteil=std::modf(((Breite.toDouble()-Grad)*60.0),&Minuten);
 	NMEA_Breite=QString("%1%2").arg(Grad).arg(QString::number((Minuten+Minutenanteil),'f',5));
-	qWarning()<<NMEA_Breite<<QString("%1").arg(Minutenanteil);
 
+	Grad=std::trunc(Laenge.toDouble());
+	Minutenanteil=std::modf(((Laenge.toDouble()-Grad)*60.0),&Minuten);
+	NMEA_Laenge=QString("%1%2").arg(Grad).arg(QString::number((Minuten+Minutenanteil),'f',5));
+
+	QString GPRMC=QString("$GPRMC,%1,A,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11").arg(DatumZeit.toString("HHmmss.zzz")).arg(NMEA_Breite).arg(BreiteRichtung)
+																			.arg(NMEA_Laenge).arg(LaengeRichtung).arg(Geschwindigkeit).arg(Kurs)
+																			.arg(DatumZeit.toString("ddMMyy")).arg(MagnetischeAbweichung)
+																			.arg(MagnetischeAbweichungRichtung).arg(Signalintegritaet);
+	Q_EMIT MeldungSenden(Meldung("7f8bd474d23e402d8924c043dcc7cf41",tr("%1 GPRMC Datensatz: %2").arg(NAME).arg(GPRMC),LOG_DEBUG));
+	Q_EMIT Daten(GPRMC.append("\r\n"));
 }
 void EM7345::KeineDatenBekommen()
 {

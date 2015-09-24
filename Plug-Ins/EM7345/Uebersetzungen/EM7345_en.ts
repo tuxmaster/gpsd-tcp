@@ -47,5 +47,9 @@
         <source>%1 Konnte keine Komando ID bekommen.</source>
         <translation>%1 Can&apos;t get an command ID.</translation>
     </message>
+    <message>
+        <source>%1 GPRMC Datensatz: %2</source>
+        <translation>%1 GPRMC data record: %2</translation>
+    </message>
 </context>
 </TS>
