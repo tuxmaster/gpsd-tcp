@@ -48,6 +48,7 @@ class EM7345 : public QObject
 		QSerialPort*	K_Modem;
 		bool			K_IDGesetzt;
 		QTimer			*K_Datenwachhund;
+		void			Pruefsumme(QString &daten);
 };
 
 #endif // EM7345_H

@@ -218,10 +218,22 @@ void EM7345::DatenZumLesen()
 																			.arg(NMEA_Laenge).arg(LaengeRichtung).arg(Geschwindigkeit).arg(Kurs)
 																			.arg(DatumZeit.toString("ddMMyy")).arg(MagnetischeAbweichung)
 																			.arg(MagnetischeAbweichungRichtung).arg(Signalintegritaet);
+	Pruefsumme(GPRMC);
 	Q_EMIT MeldungSenden(Meldung("7f8bd474d23e402d8924c043dcc7cf41",tr("%1 GPRMC Datensatz: %2").arg(NAME).arg(GPRMC),LOG_DEBUG));
 	Q_EMIT Daten(GPRMC.append("\r\n"));
 }
 void EM7345::KeineDatenBekommen()
 {
 	Q_EMIT MeldungSenden(Meldung("d6c664665e74468d85a321b20ea6b4c1",tr("%1 Keine Daten empfangen").arg(NAME),LOG_ERR));
+}
+void EM7345::Pruefsumme(QString &daten)
+{
+	unsigned char Summe='\0';
+	char Zeichen, *Zeiger = daten.toLatin1().data();
+	while (((Zeichen = *Zeiger) != '*') && (Zeichen != '\0'))
+	{
+		Summe ^= Zeichen;
+		Zeiger++;
+	}
+	daten.append(QString("*%1").arg(Summe,0,16));
 }
