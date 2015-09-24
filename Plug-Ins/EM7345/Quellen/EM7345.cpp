@@ -184,7 +184,15 @@ void EM7345::DatenZumLesen()
 	Geschwindigkeit="00.0";
 	Kurs="00.0";
 	MagnetischeAbweichung="0.0";
-	MagnetischeAbweichungRichtung='E';
+	MagnetischeAbweichungRichtung='E'; //E oder W
+	/*
+		A = Autonomous mode,
+		D = Differential Mode,
+		E = Estimated (dead-reckoning) mode
+		M = Manual Input Mode
+		S = Simulated Mode
+		N = Data Not Valid
+	*/
 	Signalintegritaet='A';
 	QDateTime DatumZeit=QDateTime::fromString(QString("%1 %2").arg(Liste[9]).arg(Liste[10]),"yyyy/MM/dd hh:mm:ss");
 	DatumZeit.setTimeZone(QTimeZone::utc());
