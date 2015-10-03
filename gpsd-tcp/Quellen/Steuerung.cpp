@@ -269,16 +269,17 @@ bool Steuerung::KontextWechseln(const QString &nutzer, const QString &gruppe)
 	NutzerID=Nutzer->pw_uid;
 
 	Melden(Meldung("b044be0993314c3384c95cce368c207e",tr("Starte als Nutzer: %1(%2) Gruppe: %3(%4)").arg(nutzer).arg(NutzerID).arg(gruppe).arg(GruppeID),LOG_DEBUG));
+	setgroups(0, NULL);
+	if(setgid(GruppeID)!=0)
+        {
+                int Fehler=errno;
+                Melden(Meldung("5acf2a01d541456499e684e160bb8ebf",tr("Konnte nicht in den Gruppenkontext %1 wechseln.\n%2").arg(gruppe).arg(strerror(Fehler)),LOG_CRIT));
+                return false;
+        }
 	if(setuid(NutzerID)!=0)
 	{
 		int Fehler=errno;
 		Melden(Meldung("b74f03cfa9d34ed6aa9f40325ff6f4c5",tr("Konnte nicht in den Benutzerkontext %1 wechseln.\n%2").arg(nutzer).arg(strerror(Fehler)),LOG_CRIT));
-		return false;
-	}
-	if(setgid(GruppeID)!=0)
-	{
-		int Fehler=errno;
-		Melden(Meldung("5acf2a01d541456499e684e160bb8ebf",tr("Konnte nicht in den Gruppenkontext %1 wechseln.\n%2").arg(gruppe).arg(strerror(Fehler)),LOG_CRIT));
 		return false;
 	}
 	return true;
