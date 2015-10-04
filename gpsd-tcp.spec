@@ -1,5 +1,5 @@
 Name:		gpsd-tcp		
-Version:	0.0.1
+Version:	0.0.2
 Release:	1%{?dist}
 Summary:	Additional GPS sources	
 Summary(de):	Zusätzliche GPS Quellen
@@ -105,7 +105,7 @@ cp gpsd-tcp.service  %{buildroot}%{_unitdir}/
 
 %files
 %exclude %{_defaultdocdir}/%{name}/Dokumentation
-%doc LICENSE README.md
+%doc LICENSE README.md Änderungen
 %{_bindir}/gpsd-tcp
 %config(noreplace) %{_sysconfdir}/gpsd-tcp.conf
 %{_qt5_translationdir}/gpsd-tcp_*
@@ -123,5 +123,8 @@ cp gpsd-tcp.service  %{buildroot}%{_unitdir}/
 %{_qt5_translationdir}/EM7345*
 
 %changelog
+* terrortux <gott@terrortux.de> 0.0.2-1
+- Änderungsliste eingefügt.
+
 * Sun Oct 4 2015 terrortux <gott@terrortux.de> 0.0.1-1
 - start
