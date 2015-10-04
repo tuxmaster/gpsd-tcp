@@ -2,7 +2,7 @@
 Daemon to feed the gpsd with position values form various sources via Plug-Ins.
 
 #Requirements/Voraussetzungen
-- Qt >= 5.4.2
+- Qt >= 5.5.0
 - systemd >= 216
 
 For/Für Fedora >= 21<br>
