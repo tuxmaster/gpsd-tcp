@@ -7,7 +7,7 @@ Summary(de):	Zusätzliche GPS Quellen
 Group:		Applications/Communications	
 License:	GPLv3
 URL:		https://github.com/tuxmaster/gpsd-tcp
-Source0:	https://github.com/tuxmaster/gpsd-tcp/releases/v%{version}.tar.gz
+Source0:	https://github.com/tuxmaster/gpsd-tcp/archive/v%{version}.tar.gz
 
 BuildRequires:	systemd, doxygen, graphviz, qt5-qtserialport-devel >= 5.5, systemd-devel, qt5-linguist	
 
