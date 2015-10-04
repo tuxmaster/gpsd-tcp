@@ -1,0 +1,9 @@
+[Unit]
+Description=gpsd-tcp
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/gpsd-tcp
+
+[Install]
+WantedBy=multi-user.target
