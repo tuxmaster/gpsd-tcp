@@ -78,7 +78,7 @@ EM7345::EM7345(QObject *eltern, const QSettings *konfiguration) : QObject(eltern
 	K_IDGesetzt=false;
 	K_Datenwachhund=new QTimer(this);
 	K_Datenwachhund->setInterval(WARTEN_AUF_DATEN*1000);
-	connect(K_Datenwachhund,SIGNAL(timeout()),this,SLOT(KeineDatenBekommen()));
+	connect(K_Datenwachhund,&QTimer::timeout,this,&EM7345::KeineDatenBekommen);
 	QTimer::singleShot(0,this,SLOT(starten()));
 }
 
@@ -104,7 +104,7 @@ void EM7345::starten()
 {
 	Q_EMIT MeldungSenden(Meldung("a42c182ded374fcb86fd8bd605d9cfa6",tr("%1 benutze Anschluss %2").arg(NAME).arg(K_Anschluss),LOG_INFO));
 	K_Modem =new QSerialPort(this);
-	connect(K_Modem,SIGNAL(readyRead()),this,SLOT(DatenZumLesen()));
+	connect(K_Modem,&QSerialPort::readyRead,this,&EM7345::DatenZumLesen);
 	K_Modem->setPortName(K_Anschluss);
 	if(!K_Modem->setBaudRate(QSerialPort::Baud115200))
 	{

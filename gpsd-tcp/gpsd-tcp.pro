@@ -5,7 +5,7 @@ TARGET		= gpsd-tcp
 CONFIG 	       += link_pkgconfig
 QT		= core network
 
-PKGCONFIG      += libsystemd-journal
+PKGCONFIG      += libsystemd
 
 MOC_DIR		= tmp/moc
 OBJECTS_DIR	= tmp/obj

@@ -65,7 +65,7 @@
 Dummy::Dummy(QObject *eltern, const QSettings *) : QObject(eltern)
 {
 	QTimer *Uhr= new QTimer(this);
-	connect(Uhr,SIGNAL(timeout()),this,SLOT(DatenSenden()));
+	connect(Uhr,&QTimer::timeout,this,&Dummy::DatenSenden);
 	Uhr->start(1000);
 }
 void Dummy::DatenSenden()
