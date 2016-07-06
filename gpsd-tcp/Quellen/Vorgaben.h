@@ -18,7 +18,7 @@
 #ifndef VORGABEN_H
 #define VORGABEN_H
 
-#define VERSION "0.0.1"
+#define VERSION "0.2.0"
 #define PROGRAMM "gpsd-tcp"
 #define KONFIGDATEI "/etc/gpsd-tcp.conf"
 #define MODULE "/usr/lib64/gpsd-tcp"

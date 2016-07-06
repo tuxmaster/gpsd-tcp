@@ -179,7 +179,7 @@ void Steuerung::loslegen()
 		return;
 
 	if(K_Protokoll >=Protokolltiefe::Info)
-		Melden(Meldung("a91b6e29651945378c619e50a629f8cf",trUtf8("Bereit für die Anfragen."),LOG_INFO));
+		Melden(Meldung("a91b6e29651945378c619e50a629f8cf",tr("Bereit für die Anfragen."),LOG_INFO));
 }
 /*!
 	\brief Wird von der Unix Signalsteuerung beim Signal SIGTERM aufgerufen.
@@ -271,11 +271,11 @@ bool Steuerung::KontextWechseln(const QString &nutzer, const QString &gruppe)
 	Melden(Meldung("b044be0993314c3384c95cce368c207e",tr("Starte als Nutzer: %1(%2) Gruppe: %3(%4)").arg(nutzer).arg(NutzerID).arg(gruppe).arg(GruppeID),LOG_DEBUG));
 	setgroups(0, NULL);
 	if(setgid(GruppeID)!=0)
-        {
-                int Fehler=errno;
-                Melden(Meldung("5acf2a01d541456499e684e160bb8ebf",tr("Konnte nicht in den Gruppenkontext %1 wechseln.\n%2").arg(gruppe).arg(strerror(Fehler)),LOG_CRIT));
-                return false;
-        }
+		{
+				int Fehler=errno;
+				Melden(Meldung("5acf2a01d541456499e684e160bb8ebf",tr("Konnte nicht in den Gruppenkontext %1 wechseln.\n%2").arg(gruppe).arg(strerror(Fehler)),LOG_CRIT));
+				return false;
+		}
 	if(setuid(NutzerID)!=0)
 	{
 		int Fehler=errno;
@@ -300,13 +300,13 @@ bool Steuerung::TCPstarten()
 			Anschluss=K_Einstellungen->value(QString("%1/Anschluss").arg(Dienst),0).toInt();
 			if ((Anschluss ==0) || (Anschluss >65535))
 			{
-				Melden(Meldung("ba896cda507d4a79a34c6b7db175b64e",trUtf8("Anschlussnummer %1 ist ungültig. Ignoriere %2.").arg(Anschluss).arg(Dienst),LOG_ERR));
+				Melden(Meldung("ba896cda507d4a79a34c6b7db175b64e",tr("Anschlussnummer %1 ist ungültig. Ignoriere %2.").arg(Anschluss).arg(Dienst),LOG_ERR));
 				continue;
 			}
 			Adresse=K_Einstellungen->value(QString("%1/Adresse").arg(Dienst),"").toString();
 			if ((Adresse.isEmpty()) || (QHostAddress(Adresse).isNull()))
 			{
-				Melden(Meldung("bd4b290c2a7a4627a8d2129338b58798",trUtf8("Adresse %1 ist ungültig. Ignoriere %2.").arg(Adresse).arg(Dienst),LOG_ERR));
+				Melden(Meldung("bd4b290c2a7a4627a8d2129338b58798",tr("Adresse %1 ist ungültig. Ignoriere %2.").arg(Adresse).arg(Dienst),LOG_ERR));
 				continue;
 			}
 			Melden(Meldung("81964998fd0f4f6cb7c82ffc5b7bdf27",tr("Erstelle: %1 Adresse: %2 Anschluss: %3").arg(Dienst).arg(Adresse).arg(Anschluss),LOG_DEBUG));
@@ -323,7 +323,7 @@ bool Steuerung::TCPstarten()
 				gueltigerDienst=true;
 				connect(Datendienst, SIGNAL(newConnection()), K_Klientensammler, SLOT(map()));
 				K_Klientensammler->setMapping(Datendienst,Datendienst);
-				Melden(Meldung("fefe966c7e594a48bd0365e961a2c30c",trUtf8("Lausche für %1 auf %2 Anschluss %3").arg(Dienst).arg(Adresse).arg(Anschluss),LOG_INFO));
+				Melden(Meldung("fefe966c7e594a48bd0365e961a2c30c",tr("Lausche für %1 auf %2 Anschluss %3").arg(Dienst).arg(Adresse).arg(Anschluss),LOG_INFO));
 			}
 
 		}
