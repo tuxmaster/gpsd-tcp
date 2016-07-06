@@ -79,7 +79,7 @@ class Meldung
 		QString			K_Text;
 		int				K_Prioritaet;
 };
-static QDebug operator<<(QDebug debug, const Meldung &m)
+inline static QDebug operator<<(QDebug debug, const Meldung &m)
 {
 	QDebugStateSaver saver(debug);
 	debug.nospace() << '(' << m.IDHolen() << ", " << m.TextHolen() << ", "<< Meldung::Textprio(m.PrioritaetHolen())<<')';
