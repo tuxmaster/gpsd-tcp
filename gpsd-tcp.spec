@@ -1,5 +1,5 @@
 Name:		gpsd-tcp		
-Version:	0.0.2
+Version:	0.1.0
 Release:	1%{?dist}
 Summary:	Additional GPS sources	
 Summary(de):	Zusätzliche GPS Quellen
@@ -123,8 +123,9 @@ cp gpsd-tcp.service  %{buildroot}%{_unitdir}/
 %{_qt5_translationdir}/EM7345*
 
 %changelog
-* terrortux <gott@terrortux.de> 0.0.2-1
+* terrortux <gott@terrortux.de> 0.1.0-1
 - Änderungsliste eingefügt.
+- Alles mehr Qt5 konform.
 
 * Sun Oct 4 2015 terrortux <gott@terrortux.de> 0.0.1-1
 - start
