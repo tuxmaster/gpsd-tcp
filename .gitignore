@@ -1,0 +1,9 @@
+*~
+Dokumenation
+Makefile
+*.so
+tmp
+*.user
+*.qm
+gpsd-tcp/gpsd-tcp
+*.user*
