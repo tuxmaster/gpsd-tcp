@@ -1,19 +1,24 @@
-Name:		gpsd-tcp		
+%if 0%{?fedora}
+%global _my_debug CONFIG+=debug
+%endif
+Name:		gpsd-tcp
 Version:	0.1.0
 Release:	1%{?dist}
 Summary:	Additional GPS sources	
 Summary(de):	Zusätzliche GPS Quellen
 
-Group:		Applications/Communications	
 License:	GPLv3
 URL:		https://github.com/tuxmaster/gpsd-tcp
-Source0:	https://github.com/tuxmaster/gpsd-tcp/archive/v%{version}.tar.gz
+Source0:	%{name}-%{version}.tar.xz
 
-BuildRequires:	systemd, doxygen, graphviz, qt5-qtserialport-devel >= 5.5, systemd-devel, qt5-linguist	
-
-Requires(post):		systemd
-Requires(preun):	systemd
-Requires(postun):	systemd
+BuildRequires:	systemd, doxygen, graphviz
+%if 0%{?rhel}
+BuildRequires:	application(qt5-linguist.desktop)
+%else
+BuildRequires:	cmake(Qt5LinguistTools)
+%endif
+BuildRequires:	pkgconfig(Qt5SerialPort) => 5.5, pkgconfig(libsystemd)
+%{?systemd_requires}
 
 %description
 Provides an service that can deliver GPS information's
@@ -27,7 +32,7 @@ für den gpsd bereit stellen kann. Dieser lässt sich
 %package devel
 Summary:	Files for development
 Summary(de):	Dateien für die Entwicklung
-Requires:	%{name}-%{version}
+Requires:	%{name}%{?_isa} = %{version}-%{release}
 
 %description devel
 The files for develop additional modules.
@@ -38,7 +43,7 @@ Die Dateien um neue Module zu entwickeln.
 %package dummy
 Summary:	The dummy module
 Summary(de):	Das Testmodul
-Requires:	%{name}-%{version}
+Requires:	%{name}%{?_isa} = %{version}-%{release}
 
 %description dummy
 The dummy module for testing.
@@ -49,7 +54,7 @@ Ein Dummy der zum Testen dient.
 %package EM7345
 Summary:	The EM7345 module
 Summary(de):	Das EM7345 Module
-Requires:	%{name}-%{version}
+Requires:	%{name}%{?_isa} = %{version}-%{release}
 
 %description EM7345
 The module for the EM7345 LTE modem.
@@ -73,14 +78,13 @@ Das Modul für das EM7345 LTE Modem.
 %systemd_postun_with_restart gpsd-tcp.service
 
 %prep
-%autosetup -n %{name}
+%autosetup
 
 %build
-qmake-qt5
+qmake-qt5 %{?_my_debug}
 make %{?_smp_mflags}
 doxygen
-sed 's|XXX|%{_libdir}/%{name}|g' gpsd-tcp.conf > gpsd-tcp.conf.neu
-mv gpsd-tcp.conf.neu gpsd-tcp.conf
+sed -i 's|XXX|%{_libdir}/%{name}|g' gpsd-tcp.conf
 
 %install
 rm -rf %{buildroot}
@@ -123,9 +127,10 @@ cp gpsd-tcp.service  %{buildroot}%{_unitdir}/
 %{_qt5_translationdir}/EM7345*
 
 %changelog
-* terrortux <gott@terrortux.de> 0.1.0-1
-- Änderungsliste eingefügt.
-- Alles mehr Qt5 konform.
+* Sun Mar 24 2019 terrortux <gott@terrortux.de> 0.1.0-1
+- Add change log
+- More qt5 specific
+- Spec file support for RHEL >=7 and Fedora >=28
 
 * Sun Oct 4 2015 terrortux <gott@terrortux.de> 0.0.1-1
 - start
